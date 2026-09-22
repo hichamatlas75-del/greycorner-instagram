@@ -8,6 +8,8 @@
 const App = {
   currentEditingPost: null,
   currentEditingTemplate: null,
+  isMediaPickerMode: false,
+  activeLibFilter: 'all',
 
   async init() {
     console.log('[App] Démarrage du module Réseaux Sociaux Grey Corner...');
@@ -29,7 +31,10 @@ const App = {
     // 5. Vérifier les alertes de stories 24h
     await this.checkDailyStoryAlerts();
 
-    // 6. Attacher les événements globaux
+    // 6. Mettre à jour le compteur de la réserve de photos
+    await this.updateMediaBadge();
+
+    // 7. Attacher les événements globaux
     this.bindGlobalEvents();
   },
 
@@ -80,6 +85,64 @@ const App = {
       el.addEventListener('click', (e) => {
         const modal = e.target.closest('.modal-overlay');
         if (modal) modal.classList.remove('active');
+      });
+    });
+
+    // ─── ÉVÉNEMENTS DE LA BANQUE DE VISUELS ───
+    // Ouverture depuis l'en-tête
+    document.getElementById('btnOpenMediaLibrary')?.addEventListener('click', () => {
+      this.openMediaLibrary(false);
+    });
+
+    // Sélection depuis la modale de créneau
+    document.getElementById('btnPickFromLibrary')?.addEventListener('click', () => {
+      this.openMediaLibrary(true);
+    });
+
+    // Upload multiple de photos
+    const libFileInput = document.getElementById('libFileInput');
+    document.getElementById('btnUploadMultipleMedia')?.addEventListener('click', () => {
+      libFileInput?.click();
+    });
+
+    libFileInput?.addEventListener('change', async (e) => {
+      const files = Array.from(e.target.files || []);
+      if (files.length === 0) return;
+
+      const titreBase = document.getElementById('libTitre')?.value.trim() || '';
+      const typeContenu = document.getElementById('libType')?.value || 'produit';
+
+      this.showToast(`Téléversement de ${files.length} photo${files.length > 1 ? 's' : ''}...`);
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        try {
+          const url = await DataService.uploadMedia(file);
+          const itemTitle = files.length === 1 && titreBase ? titreBase : (titreBase ? `${titreBase} (${i + 1})` : file.name.replace(/\.[^/.]+$/, ""));
+          await DataService.addMediaItem({
+            url,
+            titre: itemTitle,
+            type_contenu: typeContenu
+          });
+        } catch (err) {
+          console.error('Erreur téléversement media', err);
+        }
+      }
+
+      libFileInput.value = '';
+      if (document.getElementById('libTitre')) document.getElementById('libTitre').value = '';
+      await this.renderMediaLibrary();
+      await this.updateMediaBadge();
+      this.showToast(`🎉 ${files.length} photo${files.length > 1 ? 's ajoutées' : ' ajoutée'} à la réserve !`);
+    });
+
+    // Filtres de la médiathèque
+    document.querySelectorAll('[data-lib-filter]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-lib-filter]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        this.activeLibFilter = btn.dataset.libFilter;
+        this.renderMediaLibrary();
       });
     });
 
@@ -363,6 +426,134 @@ const App = {
     setTimeout(() => {
       toast.classList.remove('show');
     }, duration);
+  },
+
+  // ─── GESTION DE LA BANQUE DE VISUELS (RÉSERVE DE PHOTOS) ───
+  async updateMediaBadge() {
+    try {
+      const list = await DataService.getMediaLibrary();
+      const dispoCount = list.filter(m => m.statut === 'disponible').length;
+      const badge = document.getElementById('mediaCountDispo');
+      if (badge) badge.textContent = dispoCount;
+    } catch (e) {
+      console.warn('Erreur mise à jour badge média', e);
+    }
+  },
+
+  async openMediaLibrary(isPicker = false) {
+    this.isMediaPickerMode = isPicker;
+    const notice = document.getElementById('mediaLibraryPickerNotice');
+    if (notice) {
+      notice.style.display = isPicker ? 'inline-block' : 'none';
+      notice.textContent = isPicker ? '👉 Cliquez sur une photo pour l\'assigner au créneau' : '';
+    }
+    await this.renderMediaLibrary();
+    document.getElementById('mediaLibraryModal')?.classList.add('active');
+  },
+
+  async renderMediaLibrary() {
+    const grid = document.getElementById('mediaLibraryGrid');
+    if (!grid) return;
+
+    const list = await DataService.getMediaLibrary();
+
+    const countAll = list.length;
+    const countDispo = list.filter(m => m.statut === 'disponible').length;
+    const countPublie = list.filter(m => m.statut === 'publie' || m.statut === 'planifie').length;
+
+    if (document.getElementById('libCountAll')) document.getElementById('libCountAll').textContent = countAll;
+    if (document.getElementById('libCountDispo')) document.getElementById('libCountDispo').textContent = countDispo;
+    if (document.getElementById('libCountPublie')) document.getElementById('libCountPublie').textContent = countPublie;
+    const badge = document.getElementById('mediaCountDispo');
+    if (badge) badge.textContent = countDispo;
+
+    const filtered = list.filter(m => {
+      if (this.activeLibFilter === 'disponible') return m.statut === 'disponible';
+      if (this.activeLibFilter === 'publie') return m.statut === 'publie' || m.statut === 'planifie';
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      grid.innerHTML = `
+        <div class="empty-media-msg" style="grid-column: 1/-1; text-align:center; padding: 40px 20px; color:var(--ink-faint);">
+          <span style="font-size:32px;">📷</span><br>
+          <strong style="color:var(--ink);">Aucune photo dans cette catégorie.</strong><br>
+          Ajoutez vos photos de plats ci-dessus pour vous constituer une réserve !
+        </div>
+      `;
+      return;
+    }
+
+    grid.innerHTML = filtered.map(item => {
+      const isDispo = item.statut === 'disponible';
+      const statusBadge = isDispo 
+        ? `<span class="media-stat-pill dispo">🟢 Disponible</span>` 
+        : `<span class="media-stat-pill used">⚪ Déjà utilisé</span>`;
+
+      return `
+        <div class="media-card ${isDispo ? 'is-available' : 'is-used'}" data-media-id="${item.id}">
+          <div class="media-thumb-wrap">
+            <img src="${item.url}" alt="${item.titre || 'Plat'}" loading="lazy">
+            ${statusBadge}
+          </div>
+          <div class="media-card-body">
+            <h4 class="media-card-title">${CalendarModule.escapeHtml(item.titre || 'Plat sans titre')}</h4>
+            <div class="media-card-actions">
+              ${this.isMediaPickerMode ? `
+                <button type="button" class="btn-use-media" data-action="pick-this">
+                  <span>✨</span> Utiliser ce plat
+                </button>
+              ` : `
+                <button type="button" class="btn-delete-media" data-action="delete-media" title="Supprimer de la réserve">
+                  <span>🗑️ Supprimer</span>
+                </button>
+              `}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Attacher les événements
+    grid.querySelectorAll('.media-card').forEach(card => {
+      const mediaId = card.dataset.mediaId;
+      const item = list.find(m => m.id === mediaId);
+      if (!item) return;
+
+      const btnPick = card.querySelector('[data-action="pick-this"]');
+      btnPick?.addEventListener('click', () => {
+        this.selectMediaForCurrentSlot(item);
+      });
+
+      const btnDel = card.querySelector('[data-action="delete-media"]');
+      btnDel?.addEventListener('click', async () => {
+        if (confirm(`Supprimer "${item.titre || 'cette photo'}" de votre réserve ?`)) {
+          await DataService.deleteMediaItem(item.id);
+          await this.renderMediaLibrary();
+          await this.updateMediaBadge();
+          this.showToast('Photo supprimée de la réserve.');
+        }
+      });
+    });
+  },
+
+  selectMediaForCurrentSlot(mediaItem) {
+    document.getElementById('postVisuelUrl').value = mediaItem.url;
+    this.updateImagePreview(mediaItem.url);
+
+    // Si le titre du créneau est encore vide ou par défaut, on met le nom du plat
+    const titreInput = document.getElementById('postTitre');
+    if ((!titreInput.value.trim() || titreInput.value.includes('—')) && mediaItem.titre) {
+      titreInput.value = mediaItem.titre;
+    }
+
+    if (mediaItem.type_contenu) {
+      document.getElementById('postTypeContenu').value = mediaItem.type_contenu;
+    }
+
+    // Fermer la médiathèque
+    document.getElementById('mediaLibraryModal')?.classList.remove('active');
+    this.showToast(`✨ Photo "${mediaItem.titre || 'Plat'}" appliquée au créneau !`);
   }
 };
 

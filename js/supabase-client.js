@@ -276,6 +276,58 @@ const DataService = {
     }
   ],
 
+  // Banque de visuels initiale pour la réserve de photos
+  initialDemoMedia: [
+    {
+      id: 'media-demo-1',
+      url: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80',
+      titre: 'Côtes d\'Agneau Grillées & Romarin',
+      type_contenu: 'produit',
+      statut: 'disponible',
+      created_at: '2026-09-15T10:00:00Z'
+    },
+    {
+      id: 'media-demo-2',
+      url: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=80',
+      titre: 'Burger Gourmet Grey Corner & Frites Maison',
+      type_contenu: 'produit',
+      statut: 'disponible',
+      created_at: '2026-09-16T11:00:00Z'
+    },
+    {
+      id: 'media-demo-3',
+      url: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=800&q=80',
+      titre: 'Dessert Signature : Fondant Chocolat Cœur Coulant',
+      type_contenu: 'produit',
+      statut: 'disponible',
+      created_at: '2026-09-17T14:00:00Z'
+    },
+    {
+      id: 'media-demo-4',
+      url: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80',
+      titre: 'Cocktail Création "Grey Sunset" au Bar',
+      type_contenu: 'coulisses',
+      statut: 'disponible',
+      created_at: '2026-09-18T16:00:00Z'
+    },
+    {
+      id: 'media-demo-5',
+      url: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80',
+      titre: 'Entrecôte Maturée 30 jours à la Braise',
+      type_contenu: 'produit',
+      statut: 'publie',
+      created_at: '2026-08-30T09:00:00Z'
+    },
+    {
+      id: 'media-demo-6',
+      url: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80',
+      titre: 'Salade Italienne & Burrata des Pouilles',
+      type_contenu: 'produit',
+      statut: 'publie',
+      created_at: '2026-09-06T10:00:00Z'
+    }
+  ],
+
   /**
    * Initialisation du service de données
    */
@@ -298,6 +350,9 @@ const DataService = {
     this.isDemo = true;
     if (!localStorage.getItem(Config.STORAGE_KEYS.DATA_STORE)) {
       this.saveLocalStore(this.initialDemoPosts);
+    }
+    if (!localStorage.getItem(Config.STORAGE_KEYS.MEDIA_STORE)) {
+      this.saveLocalMediaStore(this.initialDemoMedia);
     }
   },
 
@@ -548,6 +603,97 @@ const DataService = {
 
   resetDemoData() {
     this.saveLocalStore(this.initialDemoPosts);
+    this.saveLocalMediaStore(this.initialDemoMedia);
+  },
+
+  getLocalMediaStore() {
+    try {
+      const raw = localStorage.getItem(Config.STORAGE_KEYS.MEDIA_STORE);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      return [];
+    }
+  },
+
+  saveLocalMediaStore(media) {
+    try {
+      localStorage.setItem(Config.STORAGE_KEYS.MEDIA_STORE, JSON.stringify(media));
+    } catch (e) {
+      console.error('[DataService] Erreur sauvegarde médiathèque', e);
+    }
+  },
+
+  async getMediaLibrary() {
+    if (!this.isDemo && this.client) {
+      try {
+        const { data, error } = await this.client
+          .from('media_library')
+          .select('*')
+          .order('created_at', { ascending: false });
+        if (!error && data) return data;
+      } catch (err) {
+        console.warn('[DataService] Table media_library non trouvée sur Supabase, repli local.', err);
+      }
+    }
+    return this.getLocalMediaStore();
+  },
+
+  async addMediaItem({ url, titre = '', type_contenu = 'produit' }) {
+    const item = {
+      url,
+      titre: titre.trim() || 'Visuel sans titre',
+      type_contenu,
+      statut: 'disponible',
+      created_at: new Date().toISOString()
+    };
+
+    if (!this.isDemo && this.client) {
+      try {
+        const { data, error } = await this.client
+          .from('media_library')
+          .insert([item])
+          .select()
+          .single();
+        if (!error && data) return data;
+      } catch (err) {
+        console.warn('[DataService] Erreur insertion Supabase media_library', err);
+      }
+    }
+
+    const all = this.getLocalMediaStore();
+    item.id = 'media-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6);
+    all.unshift(item);
+    this.saveLocalMediaStore(all);
+    return item;
+  },
+
+  async deleteMediaItem(id) {
+    if (!this.isDemo && this.client) {
+      try {
+        await this.client.from('media_library').delete().eq('id', id);
+      } catch (e) {}
+    }
+    const all = this.getLocalMediaStore().filter(m => m.id !== id);
+    this.saveLocalMediaStore(all);
+    return true;
+  },
+
+  async updateMediaStatus(id, statut, postId = null) {
+    if (!this.isDemo && this.client) {
+      try {
+        await this.client
+          .from('media_library')
+          .update({ statut, post_id: postId })
+          .eq('id', id);
+      } catch (e) {}
+    }
+    const all = this.getLocalMediaStore();
+    const target = all.find(m => m.id === id);
+    if (target) {
+      target.statut = statut;
+      target.post_id = postId;
+      this.saveLocalMediaStore(all);
+    }
   }
 };
 

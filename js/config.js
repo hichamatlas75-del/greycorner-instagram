@@ -11,6 +11,7 @@ const Config = {
     SUPABASE_URL: 'gc_insta_supabase_url',
     SUPABASE_KEY: 'gc_insta_supabase_key',
     DATA_STORE: 'gc_insta_posts_store_v1',
+    MEDIA_STORE: 'gc_insta_media_store_v1',
     APP_MODE: 'gc_insta_app_mode' // 'supabase' ou 'demo'
   },
 

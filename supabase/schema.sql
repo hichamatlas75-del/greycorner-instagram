@@ -113,3 +113,33 @@ drop policy if exists "Suppression de médias Instagram autorisée" on storage.o
 create policy "Suppression de médias Instagram autorisée"
   on storage.objects for delete
   using (bucket_id = 'instagram-media');
+
+-- 7. TABLE DE LA BANQUE DE VISUELS (MÉDIATHÈQUE / STOCK DE PHOTOS)
+create table if not exists public.media_library (
+  id uuid primary key default gen_random_uuid(),
+  url text not null,
+  titre text,
+  type_contenu text default 'produit' check (type_contenu in ('produit', 'coulisses', 'promo', 'evenement')),
+  statut text not null default 'disponible' check (statut in ('disponible', 'planifie', 'publie')),
+  post_id uuid references public.posts(id) on delete set null,
+  created_at timestamptz default now()
+);
+
+alter table public.media_library enable row level security;
+
+drop policy if exists "Lecture publique de la banque de visuels" on public.media_library;
+create policy "Lecture publique de la banque de visuels"
+  on public.media_library for select using (true);
+
+drop policy if exists "Insertion dans la banque de visuels autorisée" on public.media_library;
+create policy "Insertion dans la banque de visuels autorisée"
+  on public.media_library for insert with check (true);
+
+drop policy if exists "Modification de la banque de visuels autorisée" on public.media_library;
+create policy "Modification de la banque de visuels autorisée"
+  on public.media_library for update using (true);
+
+drop policy if exists "Suppression de la banque de visuels autorisée" on public.media_library;
+create policy "Suppression de la banque de visuels autorisée"
+  on public.media_library for delete using (true);
+

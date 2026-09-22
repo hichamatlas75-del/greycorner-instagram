@@ -22,6 +22,9 @@
       </div>
 
       <div class="nav-actions">
+        <button id="btnOpenMediaLibrary" class="btn-nav-media" title="Ouvrir la réserve de photos">
+          <span>📸</span> Réserve Photos (<span id="mediaCountDispo">0</span>)
+        </button>
         <div id="modeBadge" class="mode-badge demo" title="Statut de connexion">
           <span class="mode-dot"></span> Mode Démo Local
         </div>
@@ -216,6 +219,12 @@
             </div>
             
             <input type="url" id="postVisuelUrl" placeholder="Ou collez directement une URL d'image (ex: https://...)" style="margin-top:8px">
+            
+            <div style="margin-top:8px;">
+              <button type="button" id="btnPickFromLibrary" class="btn-pick-library">
+                <span>🖼️</span> Choisir parmi mes photos en réserve
+              </button>
+            </div>
           </div>
 
           <!-- Raccourcis d'aide à la publication rapide Instagram -->
@@ -267,6 +276,68 @@
           <button type="submit" class="btn-modal primary">Enregistrer le créneau</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- MODALE DE LA BANQUE DE VISUELS / RÉSERVE DE PHOTOS -->
+  <div id="mediaLibraryModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="mediaModalTitle">
+    <div class="modal-card modal-card-large">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <h3 id="mediaModalTitle">📸 Réserve de Photos Grey Corner</h3>
+          <span id="mediaLibraryPickerNotice" class="slot-tag" style="display:none; background:#E0E7FF; color:#3730A3;">Mode Sélection</span>
+        </div>
+        <button class="btn-close-modal" data-close-modal title="Fermer">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <p style="font-size:13.5px; color:var(--ink-soft); line-height:1.4;">
+          Stockez vos photos de plats à l'avance pour piocher une image différente à chaque publication sans jamais la chercher !
+        </p>
+
+        <!-- Formulaire d'ajout rapide de photos -->
+        <div class="library-upload-box">
+          <div class="form-row">
+            <div class="form-group" style="flex:2;">
+              <label for="libTitre">Nom du plat ou sujet (optionnel)</label>
+              <input type="text" id="libTitre" placeholder="Ex: Tajine d'agneau, Salade Burrata...">
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label for="libType">Catégorie</label>
+              <select id="libType">
+                <option value="produit">🍽️ Plat / Produit</option>
+                <option value="coulisses">👨‍🍳 Coulisses / Équipe</option>
+                <option value="promo">🏷️ Promo / Brunch</option>
+                <option value="evenement">🎉 Événement / Soirée</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:12px; margin-top:10px; flex-wrap:wrap;">
+            <input type="file" id="libFileInput" accept="image/*" multiple style="display:none">
+            <button type="button" id="btnUploadMultipleMedia" class="btn-modal primary" style="display:inline-flex; align-items:center; gap:6px;">
+              <span>➕</span> Ajouter des photos (1 ou plusieurs)
+            </button>
+            <span style="font-size:12px; color:var(--ink-faint);">Glissez ou sélectionnez plusieurs photos d'un coup</span>
+          </div>
+        </div>
+
+        <!-- Filtres de la médiathèque -->
+        <div class="library-filters">
+          <button class="filter-pill active" data-lib-filter="all">Toutes (<span id="libCountAll">0</span>)</button>
+          <button class="filter-pill" data-lib-filter="disponible">🟢 Disponibles (<span id="libCountDispo">0</span>)</button>
+          <button class="filter-pill" data-lib-filter="publie">⚪ Déjà publiées (<span id="libCountPublie">0</span>)</button>
+        </div>
+
+        <!-- Grille des photos de la réserve -->
+        <div id="mediaLibraryGrid" class="library-grid">
+          <!-- Rendu dynamique par app.js -->
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-modal secondary" data-close-modal>Fermer</button>
+      </div>
     </div>
   </div>
 
