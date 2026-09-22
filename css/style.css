@@ -2702,33 +2702,6 @@ button:active,
   color: var(--teal-deep);
 }
 
-/* Demo bypass button */
-.auth-demo-footer {
-  padding-top: 14px;
-  border-top: 1px solid var(--line-soft);
-  text-align: center;
-}
-
-.btn-auth-demo {
-  background: transparent;
-  border: 1px dashed var(--line);
-  color: var(--ink-soft);
-  padding: 9px 16px;
-  border-radius: var(--radius-sm);
-  font-size: 12.5px;
-  cursor: pointer;
-  font-family: 'Inter', sans-serif;
-  transition: all 0.18s ease;
-  width: 100%;
-  min-height: 44px;
-}
-
-.btn-auth-demo:hover {
-  background: var(--paper-soft);
-  border-color: var(--ink-faint);
-  color: var(--ink);
-}
-
 /* ─── ÉTATS DE VERROUILLAGE ─── */
 body.auth-locked .main-shell,
 body.auth-locked #globalStoryAlert,

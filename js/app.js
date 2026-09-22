@@ -45,9 +45,10 @@ const App = {
 
     // Vérifier si un utilisateur a déjà une session active
     const user = await DataService.getCurrentUser();
-    if (user) {
+    if (user && user.email && user.email !== 'visiteur@greycorner.fr') {
       await this.setAuthenticatedState(user);
     } else {
+      localStorage.removeItem('gc_auth_demo_user');
       this.setUnauthenticatedState();
     }
 
@@ -268,14 +269,6 @@ const App = {
         this.setUnauthenticatedState();
         this.showToast('🚪 Espace déconnecté et reverrouillé avec succès.');
       }
-    });
-
-    // Accès visiteur / démo
-    document.getElementById('btnBypassDemo')?.addEventListener('click', async () => {
-      const demoUser = { email: 'visiteur@greycorner.fr', id: 'demo-visiteur', role: 'demo' };
-      localStorage.setItem('gc_auth_demo_user', JSON.stringify(demoUser));
-      await this.setAuthenticatedState(demoUser);
-      this.showToast('🧪 Accès en mode Démo Local accordé.');
     });
   },
 

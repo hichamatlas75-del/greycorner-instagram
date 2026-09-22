@@ -899,7 +899,16 @@ const DataService = {
       }
     }
     const saved = localStorage.getItem('gc_auth_demo_user');
-    return saved ? JSON.parse(saved) : null;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.email && !parsed.email.includes('visiteur')) {
+          return parsed;
+        }
+      } catch (e) {}
+      localStorage.removeItem('gc_auth_demo_user');
+    }
+    return null;
   },
 
   async getSession() {
