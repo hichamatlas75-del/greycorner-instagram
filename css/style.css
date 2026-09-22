@@ -46,6 +46,12 @@
   padding: 0;
 }
 
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
 body {
   background-color: var(--paper);
   background-image: radial-gradient(circle at 1px 1px, rgba(27, 25, 18, 0.05) 1px, transparent 0);
@@ -1079,6 +1085,7 @@ body {
 .compare-details {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
@@ -1939,12 +1946,24 @@ button:active,
   .modal-card {
     max-width: 100%;
     width: 100%;
-    max-height: 92vh;
+    max-height: 90vh;
+    max-height: 90dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
     border-radius: 20px 20px 0 0;
     border-bottom: none;
     margin: 0;
     transform: translateY(100%);
     box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.25);
+  }
+
+  .modal-card form {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
   }
 
   .modal-overlay.active .modal-card {
@@ -1971,15 +1990,37 @@ button:active,
     top: 0;
     background: var(--paper-card);
     z-index: 5;
+    flex-shrink: 0;
+  }
+
+  .btn-close-modal {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    border-radius: 50%;
+  }
+
+  .status-badge {
+    padding: 5px 10px;
+    font-size: 11px;
+    min-height: 28px;
   }
 
   .modal-body {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     padding: 16px 18px;
     gap: 14px;
   }
 
   /* Empêche le zoom automatique gênant de Safari iOS sur les inputs */
   input[type="text"],
+  input[type="email"],
+  input[type="password"],
   input[type="number"],
   input[type="url"],
   select,
@@ -1999,6 +2040,14 @@ button:active,
     gap: 10px;
   }
 
+  /* Cible tactile sécurisée pour la suppression d'image */
+  .btn-remove-image {
+    min-height: 38px;
+    padding: 6px 12px;
+    font-size: 12px;
+    border-radius: var(--radius-sm);
+  }
+
   /* Raccourcis de publication faciles à toucher */
   .helper-box-actions {
     flex-direction: column;
@@ -2007,7 +2056,7 @@ button:active,
   .btn-helper-action {
     width: 100%;
     justify-content: center;
-    min-height: 42px;
+    min-height: 44px;
   }
 
   /* Pied de modale fixé en bas pour que "Enregistrer" soit toujours accessible au pouce */
@@ -2016,6 +2065,7 @@ button:active,
     bottom: 0;
     background: var(--paper-card);
     z-index: 10;
+    flex-shrink: 0;
     padding: 12px 18px max(14px, env(safe-area-inset-bottom, 14px));
     box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.05);
   }
@@ -2031,7 +2081,8 @@ button:active,
   .library-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
-    max-height: 50vh;
+    max-height: none;
+    overflow-y: visible;
   }
 
   .media-thumb-wrap {
@@ -2074,7 +2125,8 @@ button:active,
 
   .caption-templates-grid {
     grid-template-columns: 1fr;
-    max-height: 55vh;
+    max-height: none;
+    overflow-y: visible;
   }
 
   .format-guide-header {
@@ -2083,6 +2135,36 @@ button:active,
   }
 }
 
+@media (max-width: 640px) {
+  .mode-badge {
+    display: none; /* Évite tout chevauchement avec le profil utilisateur */
+  }
+
+  .nav-container {
+    padding: 8px 12px;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 500px) {
+  .nav-media-label {
+    display: none; /* Affiche "📸 (0)" pour un gain de place optimal */
+  }
+
+  .btn-nav-media {
+    padding: 5px 8px;
+    font-size: 11.5px;
+  }
+
+  .lightbox-action-label {
+    display: none; /* Ne garde que les icônes sur la visionneuse mobile */
+  }
+
+  .btn-lightbox-action {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+}
 
 @media (max-width: 420px) {
   .nav-container {
@@ -2093,17 +2175,12 @@ button:active,
     font-size: 14.5px;
   }
 
-  .btn-nav-media {
-    font-size: 11px;
-    padding: 5px 8px;
-  }
-
-  .mode-badge {
-    display: none; /* Évite tout débordement sur écrans étroits */
-  }
-
   .library-grid {
     grid-template-columns: 1fr;
+  }
+
+  .user-email-display {
+    max-width: 75px;
   }
 }
 
@@ -2634,6 +2711,7 @@ button:active,
 body.auth-locked .main-shell,
 body.auth-locked #globalStoryAlert,
 body.auth-locked .btn-nav-media,
+body.auth-locked .mode-badge,
 body.auth-locked .btn-nav-icon {
   display: none !important;
 }

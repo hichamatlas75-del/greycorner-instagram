@@ -28,7 +28,7 @@
 
       <div class="nav-actions">
         <button id="btnOpenMediaLibrary" class="btn-nav-media" title="Ouvrir la réserve de photos">
-          <span>📸</span> Réserve Photos (<span id="mediaCountDispo">0</span>)
+          <span>📸</span> <span class="nav-media-label">Réserve Photos</span> (<span id="mediaCountDispo">0</span>)
         </button>
         <div id="modeBadge" class="mode-badge demo" title="Statut de connexion">
           <span class="mode-dot"></span> Mode Démo Local
@@ -142,7 +142,7 @@
           <div class="kpi-header">
             <div class="kpi-title-block">
               <h3>Taux de respect du rythme</h3>
-              <p class="kpi-hint">Objectif : 4 créneaux tenus cette semaine</p>
+              <p class="kpi-hint">Objectif : 7 créneaux tenus cette semaine</p>
             </div>
             <div class="kpi-badge-icon">🎯</div>
           </div>
@@ -155,12 +155,12 @@
           </div>
         </article>
 
-        <!-- KPI 2 : Vues moyennes stories vs engagement post lundi -->
-        <article class="kpi-card" aria-label="Stories vs Post du Lundi">
+        <!-- KPI 2 : Vues moyennes stories vs engagement des posts feed -->
+        <article class="kpi-card" aria-label="Stories vs Posts Feed">
           <div class="kpi-header">
             <div class="kpi-title-block">
-              <h3>Stories vs Post du Lundi</h3>
-              <p class="kpi-hint">Vues moyennes des stories vs engagement du post</p>
+              <h3>Stories vs Posts Feed</h3>
+              <p class="kpi-hint">Vues moyennes des stories vs engagement des posts feed</p>
             </div>
             <div class="kpi-badge-icon">⚖️</div>
           </div>
@@ -498,10 +498,10 @@
       <div id="lightboxCaption" class="lightbox-caption">Visuel Grey Corner</div>
       <div class="lightbox-actions">
         <button type="button" id="btnLightboxDownload" class="btn-lightbox-action" title="Télécharger l'image">
-          <span>⬇️</span> Télécharger
+          <span>⬇️</span> <span class="lightbox-action-label">Télécharger</span>
         </button>
         <a id="btnLightboxOpenTab" href="#" target="_blank" rel="noopener noreferrer" class="btn-lightbox-action" title="Ouvrir l'image originale dans un nouvel onglet">
-          <span>↗️</span> Plein écran
+          <span>↗️</span> <span class="lightbox-action-label">Plein écran</span>
         </a>
         <button type="button" id="btnCloseLightbox" class="btn-lightbox-close" title="Fermer (Échap)">✕</button>
       </div>

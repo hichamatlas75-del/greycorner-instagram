@@ -137,7 +137,7 @@ const App = {
         console.error('[Auth] Erreur connexion:', err);
         const msg = err.message || '';
         if (msg.includes('Invalid login credentials')) {
-          this.showAuthFeedback(feedback, 'error', 'Identifiants incorrects. Vérifiez l\'email ou le mot de passe, ou cliquez sur "Créer un compte".');
+          this.showAuthFeedback(feedback, 'error', 'Identifiants incorrects. Vérifiez votre adresse email ou mot de passe, ou contactez l\'administrateur.');
         } else {
           this.showAuthFeedback(feedback, 'error', `⚠️ Erreur : ${msg}`);
         }
@@ -187,11 +187,14 @@ const App = {
 
     const pending = await DataService.checkPendingStoryViews();
     if (pending.length > 0) {
+      const isPlural = pending.length > 1;
       const days = pending.map(p => p.jour_cible.toUpperCase()).join(', ');
       alertBanner.style.display = 'flex';
       const msgEl = document.getElementById('globalStoryAlertMsg');
       if (msgEl) {
-        msgEl.innerHTML = `<strong>Rappel 24H :</strong> La story du <strong>${days}</strong> a été publiée mais ses vues n'ont pas encore été relevées. Relevez les stats avant expiration !`;
+        msgEl.innerHTML = isPlural
+          ? `<strong>Rappel 24H :</strong> Les stories du <strong>${days}</strong> ont été publiées mais leurs vues n'ont pas encore été relevées. Relevez les stats avant expiration !`
+          : `<strong>Rappel 24H :</strong> La story du <strong>${days}</strong> a été publiée mais ses vues n'ont pas encore été relevées. Relevez les stats avant expiration !`;
       }
     } else {
       alertBanner.style.display = 'none';
@@ -398,8 +401,9 @@ const App = {
       this.closeLightbox();
     });
 
-    document.getElementById('lightboxStage')?.addEventListener('click', (e) => {
-      if (e.target.id === 'lightboxStage') {
+    const lightboxEl = document.getElementById('imageLightbox');
+    lightboxEl?.addEventListener('click', (e) => {
+      if (e.target === lightboxEl || e.target.id === 'lightboxStage') {
         this.closeLightbox();
       }
     });
