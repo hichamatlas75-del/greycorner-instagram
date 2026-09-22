@@ -1557,3 +1557,349 @@ textarea:focus {
   color: var(--danger);
   border-color: var(--danger);
 }
+
+/* ==============================================================================
+   OPTIMISATIONS MOBILES AVANCÉES (SMARTPHONES & TABLETTES)
+   ============================================================================== */
+
+/* Suppression de l'effet bleu de tap sur mobile et retour tactile fluide */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:active, 
+.btn-slot-action:active, 
+.btn-helper-action:active, 
+.filter-pill:active,
+.btn-modal:active {
+  transform: scale(0.97);
+}
+
+@media (max-width: 768px) {
+  /* 1. ESPACEMENTS GLOBAUX & NAVIGATION */
+  body {
+    padding-bottom: calc(50px + env(safe-area-inset-bottom, 20px));
+  }
+
+  .main-shell {
+    padding: 16px 14px 40px;
+    gap: 28px;
+  }
+
+  .nav-container {
+    padding: 10px 14px;
+    gap: 8px;
+  }
+
+  .brand-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 15px;
+  }
+
+  .brand-text h1 {
+    font-size: 16px;
+  }
+
+  .brand-sub {
+    display: none; /* Évite de surcharger la barre supérieure sur mobile */
+  }
+
+  .nav-actions {
+    gap: 6px;
+  }
+
+  .btn-nav-media {
+    font-size: 11.5px;
+    padding: 5px 10px;
+  }
+
+  .mode-badge {
+    padding: 5px 8px;
+    font-size: 10.5px;
+  }
+
+  .btn-nav-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 14px;
+  }
+
+  /* 2. SÉLECTEUR DE SEMAINE */
+  .calendar-section-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .section-title-wrap h2 {
+    font-size: 20px;
+  }
+
+  .section-desc {
+    font-size: 12.5px;
+  }
+
+  .week-navigator {
+    width: 100%;
+    justify-content: space-between;
+    padding: 6px 8px;
+  }
+
+  .btn-nav-arrow {
+    width: 44px; /* Zone tactile optimale 44px */
+    height: 44px;
+    font-size: 16px;
+  }
+
+  .week-display {
+    padding: 0 4px;
+  }
+
+  .week-title {
+    font-size: 14px;
+  }
+
+  .btn-today {
+    padding: 6px 10px;
+    min-height: 38px;
+    font-size: 11px;
+  }
+
+  .prefill-prompt {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px 14px;
+    gap: 10px;
+  }
+
+  .btn-prefill {
+    width: 100%;
+    justify-content: center;
+    min-height: 42px;
+  }
+
+  /* 3. CARTES DU CALENDRIER */
+  .slots-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .slot-card {
+    border-radius: var(--radius-md);
+  }
+
+  .slot-header {
+    padding: 14px 14px 10px;
+  }
+
+  .slot-day-title {
+    font-size: 15.5px;
+  }
+
+  .slot-visual-container {
+    height: 220px; /* Plus généreux sur smartphone pour admirer le plat */
+  }
+
+  .slot-details {
+    padding: 12px 14px;
+    gap: 8px;
+  }
+
+  .slot-footer {
+    padding: 10px 14px 14px;
+    gap: 8px;
+  }
+
+  .btn-slot-action.primary {
+    min-height: 44px;
+    font-size: 13px;
+  }
+
+  .btn-slot-action.icon-only,
+  .btn-slot-action.danger {
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 16px;
+  }
+
+  /* 4. DASHBOARD ANALYTIQUE */
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .kpi-card {
+    padding: 18px 16px;
+    gap: 14px;
+  }
+
+  /* Stack vertical de la comparaison Stories vs Post sur mobile */
+  .kpi-compare-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .compare-divider {
+    width: fit-content;
+    margin: 0 auto;
+  }
+
+  .day-bar-row {
+    grid-template-columns: 75px 1fr 60px;
+    gap: 8px;
+    font-size: 12px;
+  }
+
+  /* 5. MODALES EN MODE "BOTTOM SHEET" NATIVE */
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-end; /* Glisse depuis le bas comme une appli mobile native */
+  }
+
+  .modal-card {
+    max-width: 100%;
+    width: 100%;
+    max-height: 92vh;
+    border-radius: 20px 20px 0 0;
+    border-bottom: none;
+    margin: 0;
+    transform: translateY(100%);
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.25);
+  }
+
+  .modal-overlay.active .modal-card {
+    transform: translateY(0);
+  }
+
+  /* Petite barre de poignée "drag handle" en haut */
+  .modal-header::before {
+    content: "";
+    display: block;
+    width: 36px;
+    height: 4px;
+    background: var(--line);
+    border-radius: 2px;
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .modal-header {
+    padding: 20px 18px 14px;
+    position: relative;
+    top: 0;
+    background: var(--paper-card);
+    z-index: 5;
+  }
+
+  .modal-body {
+    padding: 16px 18px;
+    gap: 14px;
+  }
+
+  /* Empêche le zoom automatique gênant de Safari iOS sur les inputs */
+  input[type="text"],
+  input[type="number"],
+  input[type="url"],
+  select,
+  textarea {
+    font-size: 16px !important;
+    min-height: 44px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* Métriques en 2x2 au lieu de 4 colonnes écrasées */
+  .metrics-grid-inputs {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  /* Raccourcis de publication faciles à toucher */
+  .helper-box-actions {
+    flex-direction: column;
+  }
+
+  .btn-helper-action {
+    width: 100%;
+    justify-content: center;
+    min-height: 42px;
+  }
+
+  /* Pied de modale fixé en bas pour que "Enregistrer" soit toujours accessible au pouce */
+  .modal-footer {
+    position: sticky;
+    bottom: 0;
+    background: var(--paper-card);
+    z-index: 10;
+    padding: 12px 18px max(14px, env(safe-area-inset-bottom, 14px));
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.05);
+  }
+
+  .modal-footer .btn-modal {
+    flex: 1;
+    min-height: 44px;
+    justify-content: center;
+    font-size: 14px;
+  }
+
+  /* 6. MÉDIATHÈQUE / RÉSERVE DE PHOTOS SUR MOBILE */
+  .library-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    max-height: 50vh;
+  }
+
+  .media-thumb-wrap {
+    height: 120px;
+  }
+
+  .media-card-title {
+    font-size: 11.5px;
+  }
+
+  .library-filters {
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 6px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .library-filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .btn-pick-library {
+    min-height: 44px;
+    font-size: 13.5px;
+  }
+}
+
+@media (max-width: 420px) {
+  .nav-container {
+    padding: 8px 10px;
+  }
+
+  .brand-text h1 {
+    font-size: 14.5px;
+  }
+
+  .btn-nav-media {
+    font-size: 11px;
+    padding: 5px 8px;
+  }
+
+  .mode-badge {
+    display: none; /* Évite tout débordement sur écrans étroits */
+  }
+
+  .library-grid {
+    grid-template-columns: 1fr;
+  }
+}
