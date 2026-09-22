@@ -549,7 +549,11 @@ const App = {
       this.showToast('Créneau enregistré avec succès !');
     } catch (err) {
       console.error(err);
-      alert('Erreur lors de l enregistrement : ' + err.message);
+      if (err.message && err.message.includes('posts_jour_cible_check')) {
+        alert("⚠️ Contrainte Supabase non à jour :\nVotre base Supabase n'accepte pas encore Mardi, Mercredi ou Jeudi.\n\n👉 Ouvrez le SQL Editor de Supabase et exécutez :\nalter table public.posts drop constraint if exists posts_jour_cible_check;\nalter table public.posts add constraint posts_jour_cible_check check (jour_cible in ('lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'));");
+      } else {
+        alert('Erreur lors de l enregistrement : ' + (err.message || 'Vérifiez la console'));
+      }
     }
   },
 
