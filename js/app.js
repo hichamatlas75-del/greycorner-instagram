@@ -190,6 +190,16 @@ const App = {
       this.openCaptionTemplatesModal();
     });
 
+    // Changement de format Instagram (Story 24h vs Post Feed)
+    document.getElementById('postType')?.addEventListener('change', (e) => {
+      const newType = e.target.value;
+      this.updateFormatGuide(newType);
+      const slotBadgeEl = document.getElementById('modalSlotBadge');
+      if (slotBadgeEl) {
+        slotBadgeEl.textContent = newType === 'story' ? 'Story 24h' : 'Post Feed';
+      }
+    });
+
     // Gestion du téléversement d'image
     const fileInput = document.getElementById('postFileInput');
     const uploadArea = document.getElementById('uploadDropZone');
@@ -361,8 +371,11 @@ const App = {
       titleEl.textContent = existingPost ? `Modifier le créneau (${template.label})` : `Créer le créneau (${template.label})`;
     }
 
+    const currentType = existingPost?.type || template.type;
+    const isStory = currentType === 'story';
+
     if (slotBadgeEl) {
-      slotBadgeEl.textContent = template.tag;
+      slotBadgeEl.textContent = isStory ? 'Story 24h' : 'Post Feed';
       slotBadgeEl.style.backgroundColor = `${template.color}20`;
       slotBadgeEl.style.color = template.color;
     }
@@ -370,7 +383,7 @@ const App = {
     // Remplir les champs
     document.getElementById('postSemaine').value = weekStr;
     document.getElementById('postJourCible').value = template.jour_cible;
-    document.getElementById('postType').value = template.type;
+    document.getElementById('postType').value = currentType;
     document.getElementById('postStatut').value = existingPost?.statut || 'idee';
     document.getElementById('postTypeContenu').value = existingPost?.type_contenu || template.defaultContent;
     document.getElementById('postTitre').value = existingPost?.titre || '';
@@ -385,7 +398,7 @@ const App = {
 
     this.updateImagePreview(existingPost?.visuel_url || '');
     this.toggleMetricsVisibility(existingPost?.statut || 'idee');
-    this.updateFormatGuide(template.type);
+    this.updateFormatGuide(currentType);
 
     modal?.classList.add('active');
   },

@@ -19,7 +19,7 @@ const Config = {
   DEFAULT_SUPABASE_URL: 'https://asbjvbyaohueievfabwz.supabase.co',
   DEFAULT_SUPABASE_KEY: 'sb_publishable_V8RHogWWqbKdlDPbOXA7ow_iFQknQTD',
 
-  // Les 4 créneaux obligatoires fixes de chaque semaine
+  // Les 7 créneaux hebdomadaires complets (Lundi au Dimanche)
   WEEKLY_TEMPLATE: [
     {
       jour_cible: 'lundi',
@@ -30,6 +30,36 @@ const Config = {
       color: '#ff7043', // Accent Lundi Sunset Corail
       badgeClass: 'badge-lundi',
       tag: 'Post Feed'
+    },
+    {
+      jour_cible: 'mardi',
+      type: 'story',
+      label: 'Mardi — Story',
+      defaultContent: 'produit',
+      description: 'Arrivages frais du marché, produits de saison & carte des vins.',
+      color: '#10b981', // Accent Mardi Émeraude Fraîcheur
+      badgeClass: 'badge-mardi',
+      tag: 'Story 24h'
+    },
+    {
+      jour_cible: 'mercredi',
+      type: 'story',
+      label: 'Mercredi — Story',
+      defaultContent: 'coulisses',
+      description: 'En cuisine avec la brigade, secret du chef ou préparation minute.',
+      color: '#8b5cf6', // Accent Mercredi Violet Savoir-faire
+      badgeClass: 'badge-mercredi',
+      tag: 'Story 24h'
+    },
+    {
+      jour_cible: 'jeudi',
+      type: 'story',
+      label: 'Jeudi — Story',
+      defaultContent: 'evenement',
+      description: 'Afterwork, cocktails signatures, suggestions du dîner & ambiance festive.',
+      color: '#ec4899', // Accent Jeudi Rose Fuchsia
+      badgeClass: 'badge-jeudi',
+      tag: 'Story 24h'
     },
     {
       jour_cible: 'vendredi',
@@ -145,6 +175,27 @@ const Config = {
       label: '👨‍🍳 En Coulisses avec la Brigade',
       titleSuggestion: 'En coulisses avec nos chefs',
       caption: `En coulisses au Grey Corner 👨‍🍳✨\n\nDerrière chaque assiette servie avec le sourire se cache le travail passionné de toute notre brigade. De la sélection des produits au dressage minutieux, le souci du détail est notre fierté.\n\n❤️ Merci pour votre confiance chaque jour !\n\n#Coulisses #BrigadeDeCuisine #ChefLife #GreyCorner #Fes #PassionCuisine`
+    },
+    {
+      id: 'mardi-marche',
+      type: 'produit',
+      label: '🥬 Mardi — Arrivages Frais & Saison',
+      titleSuggestion: 'Arrivage frais du jour au marché',
+      caption: `Sélection du jour au Grey Corner 🌿\n\nCe matin, le Chef a sélectionné les plus beaux produits de saison pour sublimer notre carte : fraîcheur absolue, terroirs préservés et saveurs authentiques.\n\nVenez déguster la carte du midi !\n\n#ProduitsFrais #ArrivageDuJour #GreyCorner #RestaurantFes #Saison #FraisEtMaison`
+    },
+    {
+      id: 'mercredi-cuisine',
+      type: 'coulisses',
+      label: '🍳 Mercredi — Secret & Cuisine en Action',
+      titleSuggestion: 'Cuisine en action & tour de main',
+      caption: `Coup de feu et précision en cuisine 🔥\n\nChaque geste compte : la caramélisation parfaite, le dressage au millimètre et l'assaisonnement juste. C'est tout l'esprit Grey Corner qui prend vie sous vos yeux.\n\nQuelle est votre spécialité préférée chez nous ? Dites-le nous en commentaire ! 👇\n\n#ChefAtWork #CuisinePassion #GreyCorner #Gourmandise #FesFood #Restaurant`
+    },
+    {
+      id: 'jeudi-afterwork',
+      type: 'evenement',
+      label: '🍹 Jeudi — Afterwork & Ambiance Détente',
+      titleSuggestion: 'Afterwork & cocktails du jeudi',
+      caption: `Le jeudi soir, c'est l'afterwork Grey Corner 🍹✨\n\nRejoignez-nous pour décompresser autour de nos cocktails créatifs et de nos planches à partager dans un cadre chaleureux et cosy.\n\n📍 Grey Corner — Réservations conseillées dès 18h30.\n\n#Afterwork #CocktailsFes #JeudiSoir #GreyCorner #ChillTime #TapasFes`
     }
   ],
 

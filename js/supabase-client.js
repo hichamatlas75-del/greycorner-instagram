@@ -29,6 +29,54 @@ const DataService = {
       partages: 14
     },
     {
+      id: 'demo-w36-tue',
+      type: 'story',
+      jour_cible: 'mardi',
+      semaine: '2026-W36',
+      statut: 'publie',
+      type_contenu: 'produit',
+      visuel_url: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80',
+      titre: 'Arrivage de Poissons Frais',
+      legende: 'Bar de ligne et dorades royales fraîchement pêchés pour la carte du soir.',
+      date_publication_reelle: '2026-09-01T10:00:00.000Z',
+      vues: 780,
+      likes: 38,
+      commentaires: 4,
+      partages: 6
+    },
+    {
+      id: 'demo-w36-wed',
+      type: 'story',
+      jour_cible: 'mercredi',
+      semaine: '2026-W36',
+      statut: 'publie',
+      type_contenu: 'coulisses',
+      visuel_url: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=800&q=80',
+      titre: 'Mise en place de la Brigade',
+      legende: 'Chaque détail compte pour vous offrir une expérience unique.',
+      date_publication_reelle: '2026-09-02T11:15:00.000Z',
+      vues: 850,
+      likes: 45,
+      commentaires: 7,
+      partages: 9
+    },
+    {
+      id: 'demo-w36-thu',
+      type: 'story',
+      jour_cible: 'jeudi',
+      semaine: '2026-W36',
+      statut: 'publie',
+      type_contenu: 'evenement',
+      visuel_url: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=800&q=80',
+      titre: 'Jeudi Afterwork & Tapas',
+      legende: 'Rendez-vous après le bureau pour un verre entre amis.',
+      date_publication_reelle: '2026-09-03T18:30:00.000Z',
+      vues: 990,
+      likes: 56,
+      commentaires: 9,
+      partages: 14
+    },
+    {
       id: 'demo-w36-2',
       type: 'story',
       jour_cible: 'vendredi',
@@ -93,6 +141,54 @@ const DataService = {
       likes: 312,
       commentaires: 38,
       partages: 22
+    },
+    {
+      id: 'demo-w37-tue',
+      type: 'story',
+      jour_cible: 'mardi',
+      semaine: '2026-W37',
+      statut: 'publie',
+      type_contenu: 'produit',
+      visuel_url: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80',
+      titre: 'Arrivage de Truffes de Saison',
+      legende: 'Parfum envoûtant en cuisine pour nos plats d exception.',
+      date_publication_reelle: '2026-09-08T10:30:00.000Z',
+      vues: 920,
+      likes: 51,
+      commentaires: 6,
+      partages: 10
+    },
+    {
+      id: 'demo-w37-wed',
+      type: 'story',
+      jour_cible: 'mercredi',
+      semaine: '2026-W37',
+      statut: 'publie',
+      type_contenu: 'coulisses',
+      visuel_url: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=800&q=80',
+      titre: 'Dressage Minute par le Chef',
+      legende: 'Quand la gastronomie devient un art au millimètre.',
+      date_publication_reelle: '2026-09-09T11:45:00.000Z',
+      vues: 890,
+      likes: 47,
+      commentaires: 5,
+      partages: 8
+    },
+    {
+      id: 'demo-w37-thu',
+      type: 'story',
+      jour_cible: 'jeudi',
+      semaine: '2026-W37',
+      statut: 'publie',
+      type_contenu: 'evenement',
+      visuel_url: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=800&q=80',
+      titre: 'Soirée Cocktails & Tapas',
+      legende: 'Ambiance feutrée au bar du Grey Corner.',
+      date_publication_reelle: '2026-09-10T19:00:00.000Z',
+      vues: 1100,
+      likes: 72,
+      commentaires: 11,
+      partages: 16
     },
     {
       id: 'demo-w37-2',
@@ -161,6 +257,54 @@ const DataService = {
       partages: 15
     },
     {
+      id: 'demo-w38-tue',
+      type: 'story',
+      jour_cible: 'mardi',
+      semaine: '2026-W38',
+      statut: 'publie',
+      type_contenu: 'produit',
+      visuel_url: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80',
+      titre: 'Arrivage du Maraîcher Local',
+      legende: 'Des herbes fraîches et légumes bio pour rehausser nos assiettes.',
+      date_publication_reelle: '2026-09-15T10:00:00.000Z',
+      vues: 810,
+      likes: 41,
+      commentaires: 4,
+      partages: 7
+    },
+    {
+      id: 'demo-w38-wed',
+      type: 'story',
+      jour_cible: 'mercredi',
+      semaine: '2026-W38',
+      statut: 'publie',
+      type_contenu: 'coulisses',
+      visuel_url: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=800&q=80',
+      titre: 'Technique & Précision en Cuisine',
+      legende: 'La passion du fait maison dans chaque préparation.',
+      date_publication_reelle: '2026-09-16T11:30:00.000Z',
+      vues: 870,
+      likes: 44,
+      commentaires: 5,
+      partages: 8
+    },
+    {
+      id: 'demo-w38-thu',
+      type: 'story',
+      jour_cible: 'jeudi',
+      semaine: '2026-W38',
+      statut: 'publie',
+      type_contenu: 'evenement',
+      visuel_url: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=800&q=80',
+      titre: 'Soirée Mocktails & Cocktails',
+      legende: 'L endroit parfait pour amorcer le week-end en douceur.',
+      date_publication_reelle: '2026-09-17T18:45:00.000Z',
+      vues: 1040,
+      likes: 67,
+      commentaires: 10,
+      partages: 15
+    },
+    {
       id: 'demo-w38-2',
       type: 'story',
       jour_cible: 'vendredi',
@@ -225,6 +369,54 @@ const DataService = {
       likes: 290,
       commentaires: 34,
       partages: 18
+    },
+    {
+      id: 'demo-w39-tue',
+      type: 'story',
+      jour_cible: 'mardi',
+      semaine: '2026-W39',
+      statut: 'planifie',
+      type_contenu: 'produit',
+      visuel_url: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80',
+      titre: 'Arrivage du Marché & Légumes Croquants',
+      legende: 'Fraîcheur absolue ce matin en cuisine pour vos déjeuners.',
+      date_publication_reelle: null,
+      vues: 0,
+      likes: 0,
+      commentaires: 0,
+      partages: 0
+    },
+    {
+      id: 'demo-w39-wed',
+      type: 'story',
+      jour_cible: 'mercredi',
+      semaine: '2026-W39',
+      statut: 'planifie',
+      type_contenu: 'coulisses',
+      visuel_url: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=800&q=80',
+      titre: 'La Brigade en Pleine Action',
+      legende: 'Dressage minute et concentration maximale avant le service.',
+      date_publication_reelle: null,
+      vues: 0,
+      likes: 0,
+      commentaires: 0,
+      partages: 0
+    },
+    {
+      id: 'demo-w39-thu',
+      type: 'story',
+      jour_cible: 'jeudi',
+      semaine: '2026-W39',
+      statut: 'planifie',
+      type_contenu: 'evenement',
+      visuel_url: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=800&q=80',
+      titre: 'Afterwork & Cocktails Signatures',
+      legende: 'Le jeudi soir, décompressez autour de nos créations du bar.',
+      date_publication_reelle: null,
+      vues: 0,
+      likes: 0,
+      commentaires: 0,
+      partages: 0
     },
     {
       id: 'demo-w39-2',
@@ -480,16 +672,15 @@ const DataService = {
   },
 
   /**
-   * Pré-remplit automatiquement les 4 créneaux vides ('idee') pour une semaine donnée
+   * Pré-remplit automatiquement les 7 créneaux vides ('idee') pour une semaine donnée
    */
   async autoPrefillWeek(weekStr) {
     const existing = await this.getPostsForWeek(weekStr);
-    const existingSlots = new Set(existing.map(p => `${p.jour_cible}_${p.type}`));
+    const existingDays = new Set(existing.map(p => p.jour_cible));
 
     const toInsert = [];
     for (const template of Config.WEEKLY_TEMPLATE) {
-      const key = `${template.jour_cible}_${template.type}`;
-      if (!existingSlots.has(key)) {
+      if (!existingDays.has(template.jour_cible)) {
         toInsert.push({
           semaine: weekStr,
           jour_cible: template.jour_cible,

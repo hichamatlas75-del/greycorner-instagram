@@ -33,7 +33,7 @@ const CalendarModule = {
       await DataService.autoPrefillWeek(this.currentWeekStr);
       await this.render();
       window.DashboardModule?.render();
-      App.showToast('4 créneaux pré-remplis avec succès (statut Idée) !');
+      App.showToast(`${Config.WEEKLY_TEMPLATE.length} créneaux pré-remplis avec succès (statut Idée) !`);
     });
   },
 
@@ -69,18 +69,18 @@ const CalendarModule = {
     const posts = await DataService.getPostsForWeek(this.currentWeekStr);
 
     // Vérifier si des créneaux manquent
-    const existingSlots = new Set(posts.map(p => `${p.jour_cible}_${p.type}`));
-    const hasMissingSlots = Config.WEEKLY_TEMPLATE.some(t => !existingSlots.has(`${t.jour_cible}_${t.type}`));
+    const existingDays = new Set(posts.map(p => p.jour_cible));
+    const hasMissingSlots = Config.WEEKLY_TEMPLATE.some(t => !existingDays.has(t.jour_cible));
 
     if (prefillBannerEl) {
       prefillBannerEl.style.display = hasMissingSlots ? 'flex' : 'none';
     }
 
-    // Vider et générer la grille des 4 créneaux
+    // Vider et générer la grille des 7 créneaux
     gridEl.innerHTML = '';
 
     for (const template of Config.WEEKLY_TEMPLATE) {
-      const post = posts.find(p => p.jour_cible === template.jour_cible && p.type === template.type);
+      const post = posts.find(p => p.jour_cible === template.jour_cible);
       const dateObj = slotDates[template.jour_cible];
       const dateFormatted = DateUtils.formatShortFr(dateObj);
       const card = this.createSlotCard(template, dateFormatted, post);
@@ -90,9 +90,11 @@ const CalendarModule = {
 
   createSlotCard(template, dateFormatted, post) {
     const card = document.createElement('div');
-    card.className = `slot-card ${template.jour_cible}`;
+    const currentType = post?.type || template.type;
+    const isStory = currentType === 'story';
+    const currentTag = isStory ? 'Story 24h' : 'Post Feed';
+    card.className = `slot-card ${template.jour_cible} is-${currentType}`;
 
-    const isStory = template.type === 'story';
     const statusKey = post?.statut || 'vide';
     const statusCfg = Config.STATUSES[statusKey] || { label: 'Non défini', icon: '⚪', class: 'status-empty' };
     const contentTypeKey = post?.type_contenu || template.defaultContent;
@@ -107,7 +109,7 @@ const CalendarModule = {
       <div class="slot-header" style="border-left-color: ${template.color}">
         <div class="slot-meta">
           <span class="slot-tag" style="background-color: ${template.color}15; color: ${template.color}; border: 1px solid ${template.color}35;">
-            ${template.tag}
+            ${currentTag}
           </span>
           <span class="slot-date">${dateFormatted}</span>
         </div>

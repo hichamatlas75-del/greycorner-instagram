@@ -20,10 +20,10 @@ const DashboardModule = {
   },
 
   /**
-   * KPI 1 : Taux de respect du rythme (créneaux tenus / 4 cette semaine)
+   * KPI 1 : Taux de respect du rythme (créneaux tenus / total cette semaine)
    */
   renderRhythmRate(weekPosts) {
-    const totalSlots = 4;
+    const totalSlots = Config.WEEKLY_TEMPLATE.length;
     const publishedCount = weekPosts.filter(p => p.statut === 'publie').length;
     const percentage = Math.round((publishedCount / totalSlots) * 100);
 
@@ -35,14 +35,14 @@ const DashboardModule = {
       valEl.innerHTML = `${percentage}% <span class="kpi-fraction">(${publishedCount}/${totalSlots})</span>`;
     }
     if (subEl) {
-      if (publishedCount === 4) {
+      if (publishedCount === totalSlots) {
         subEl.textContent = '🎉 Rythme 100% respecté cette semaine !';
         subEl.style.color = 'var(--success)';
-      } else if (publishedCount >= 2) {
-        subEl.textContent = `En bonne voie (${4 - publishedCount} restant${4 - publishedCount > 1 ? 's' : ''})`;
+      } else if (publishedCount >= Math.ceil(totalSlots / 2)) {
+        subEl.textContent = `En bonne voie (${totalSlots - publishedCount} restant${totalSlots - publishedCount > 1 ? 's' : ''})`;
         subEl.style.color = 'var(--ochre)';
       } else {
-        subEl.textContent = `Attention au rythme (${4 - publishedCount} créneaux à publier)`;
+        subEl.textContent = `Attention au rythme (${totalSlots - publishedCount} créneaux à publier)`;
         subEl.style.color = 'var(--ink-faint)';
       }
     }
@@ -53,10 +53,10 @@ const DashboardModule = {
   },
 
   /**
-   * KPI 2 : Vues moyennes stories vs engagement du post du lundi
+   * KPI 2 : Vues moyennes stories vs engagement des posts feed
    */
   renderStoriesVsPostEngagement(weekPosts) {
-    const postLundi = weekPosts.find(p => p.jour_cible === 'lundi' && p.type === 'post');
+    const feedPosts = weekPosts.filter(p => p.type === 'post' && p.statut === 'publie');
     const stories = weekPosts.filter(p => p.type === 'story' && p.statut === 'publie');
 
     // Vues moyennes des stories publiées
@@ -70,20 +70,19 @@ const DashboardModule = {
     });
     const avgStoryViews = storiesCount > 0 ? Math.round(totalStoryViews / storiesCount) : 0;
 
-    // Engagement post du lundi (likes + commentaires + partages)
-    let postEngagement = 0;
+    // Engagement des posts feed (likes + commentaires + partages)
     let postLikes = 0;
     let postComms = 0;
     let postShares = 0;
     let postViews = 0;
 
-    if (postLundi && postLundi.statut === 'publie') {
-      postLikes = postLundi.likes || 0;
-      postComms = postLundi.commentaires || 0;
-      postShares = postLundi.partages || 0;
-      postViews = postLundi.vues || 0;
-      postEngagement = postLikes + postComms + postShares;
-    }
+    feedPosts.forEach(post => {
+      postLikes += post.likes || 0;
+      postComms += post.commentaires || 0;
+      postShares += post.partages || 0;
+      postViews += post.vues || 0;
+    });
+    const postEngagement = postLikes + postComms + postShares;
 
     const containerEl = document.getElementById('kpiComparisonContainer');
     if (!containerEl) return;
@@ -93,7 +92,7 @@ const DashboardModule = {
         <div class="compare-card stories">
           <div class="compare-header">
             <span class="compare-icon">📱</span>
-            <span class="compare-tag">Stories (Ven-Sam-Dim)</span>
+            <span class="compare-tag">Stories (${storiesCount})</span>
           </div>
           <div class="compare-main-stat">
             <span class="compare-number">${avgStoryViews.toLocaleString('fr-FR')}</span>
@@ -109,7 +108,7 @@ const DashboardModule = {
         <div class="compare-card post">
           <div class="compare-header">
             <span class="compare-icon">🖼️</span>
-            <span class="compare-tag">Post Lundi (Feed)</span>
+            <span class="compare-tag">Post${feedPosts.length > 1 ? 's' : ''} Feed (${feedPosts.length})</span>
           </div>
           <div class="compare-main-stat">
             <span class="compare-number">${postEngagement.toLocaleString('fr-FR')}</span>
@@ -146,6 +145,10 @@ const DashboardModule = {
     );
 
     const statsByDay = {
+      lundi: { label: 'Lundi', totalViews: 0, count: 0, color: '#ff7043' },
+      mardi: { label: 'Mardi', totalViews: 0, count: 0, color: '#10b981' },
+      mercredi: { label: 'Mercredi', totalViews: 0, count: 0, color: '#8b5cf6' },
+      jeudi: { label: 'Jeudi', totalViews: 0, count: 0, color: '#ec4899' },
       vendredi: { label: 'Vendredi', totalViews: 0, count: 0, color: '#f43f5e' },
       samedi: { label: 'Samedi', totalViews: 0, count: 0, color: '#f59e0b' },
       dimanche: { label: 'Dimanche', totalViews: 0, count: 0, color: '#06b6d4' }
@@ -163,11 +166,15 @@ const DashboardModule = {
       return { dayKey, ...data, avg };
     });
 
-    // Trier par moyenne décroissante
-    dayAverages.sort((a, b) => b.avg - a.avg);
+    // Conserver les jours qui ont au moins 1 publication ou le top des jours configurés
+    const activeDays = dayAverages.filter(d => d.count > 0);
+    const displayList = activeDays.length >= 3 ? activeDays : dayAverages;
 
-    const bestDay = dayAverages[0];
-    const maxAvg = Math.max(...dayAverages.map(d => d.avg), 1);
+    // Trier par moyenne décroissante
+    displayList.sort((a, b) => b.avg - a.avg);
+
+    const bestDay = displayList[0] || { label: 'Pas assez de données', count: 0, avg: 0 };
+    const maxAvg = Math.max(...displayList.map(d => d.avg), 1);
 
     const containerEl = document.getElementById('kpiBestDayContainer');
     if (!containerEl) return;

@@ -11,7 +11,7 @@ create extension if not exists "pgcrypto";
 create table if not exists public.posts (
   id uuid primary key default gen_random_uuid(),
   type text not null check (type in ('post', 'story')),
-  jour_cible text not null check (jour_cible in ('lundi', 'vendredi', 'samedi', 'dimanche')),
+  jour_cible text not null check (jour_cible in ('lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche')),
   semaine text not null, -- Format ISO, ex: '2026-W39'
   statut text not null default 'idee' check (statut in ('idee', 'planifie', 'publie')),
   type_contenu text check (type_contenu in ('produit', 'coulisses', 'promo', 'evenement')),

@@ -60,11 +60,20 @@ const DateUtils = {
   },
 
   /**
-   * Retourne un dictionnaire des dates réelles des 4 créneaux fixes pour une semaine donnée
+   * Retourne un dictionnaire des dates réelles des 7 créneaux fixes pour une semaine donnée
    */
   getSlotDates(weekStr) {
     const { year, week } = this.parseIsoWeek(weekStr);
     const monday = this.getMondayOfWeek(year, week);
+
+    const tuesday = new Date(monday);
+    tuesday.setDate(monday.getDate() + 1);
+
+    const wednesday = new Date(monday);
+    wednesday.setDate(monday.getDate() + 2);
+
+    const thursday = new Date(monday);
+    thursday.setDate(monday.getDate() + 3);
 
     const friday = new Date(monday);
     friday.setDate(monday.getDate() + 4);
@@ -77,6 +86,9 @@ const DateUtils = {
 
     return {
       lundi: monday,
+      mardi: tuesday,
+      mercredi: wednesday,
+      jeudi: thursday,
       vendredi: friday,
       samedi: saturday,
       dimanche: sunday

@@ -28,13 +28,17 @@ declare
 begin
   -- Déterminer le jour actuel en français
   select case extract(isodow from now())
+    when 1 then 'lundi'
+    when 2 then 'mardi'
+    when 3 then 'mercredi'
+    when 4 then 'jeudi'
     when 5 then 'vendredi'
     when 6 then 'samedi'
     when 7 then 'dimanche'
     else ''
   end into today_day_fr;
 
-  -- Si aujourd'hui est un jour de story (vendredi, samedi, dimanche)
+  -- Si aujourd'hui est un jour valide
   if today_day_fr <> '' then
     for r in 
       select id, semaine, jour_cible, titre, vues, statut
@@ -56,11 +60,11 @@ end;
 $$ language plpgsql security definer;
 
 -- 4. PROGRAMMATION AVEC PG_CRON
--- Déclenchement à 21h30 tous les vendredis (5), samedis (6) et dimanches (0 ou 7)
--- Cron syntax: minute (30) heure (21) jour-du-mois (*) mois (*) jour-de-la-semaine (5,6,0)
+-- Déclenchement à 21h30 tous les soirs (1 à 7)
+-- Cron syntax: minute (30) heure (21) jour-du-mois (*) mois (*) jour-de-la-semaine (*)
 select cron.schedule(
   'rappel-expiration-stories-greycorner',
-  '30 21 * * 5,6,0',
+  '30 21 * * *',
   $$select public.check_stories_view_reminder();$$
 );
 

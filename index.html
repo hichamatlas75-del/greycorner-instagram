@@ -54,7 +54,7 @@
       <div class="calendar-section-header">
         <div class="section-title-wrap">
           <h2 id="calendarTitle">Calendrier Hebdomadaire</h2>
-          <p class="section-desc">Rythme fixe Instagram : 1 post lundi, 1 story vendredi, samedi et dimanche.</p>
+          <p class="section-desc">Planning hebdomadaire Instagram : 7 jours complets du lundi au dimanche (Feed & Stories).</p>
         </div>
 
         <div class="week-navigator">
@@ -72,14 +72,14 @@
       <div id="prefillPrompt" class="prefill-prompt" style="display: none;">
         <div class="prefill-text">
           <strong>Cette semaine comporte des créneaux non initialisés.</strong><br>
-          Générez instantanément les 4 créneaux vides (statut Idée) pour éviter la page blanche.
+          Générez instantanément les 7 créneaux vides (statut Idée) pour éviter la page blanche.
         </div>
         <button id="btnPrefillWeek" class="btn-prefill">
           <span>⚡</span> Pré-remplir la semaine
         </button>
       </div>
 
-      <!-- Grille des 4 créneaux -->
+      <!-- Grille des 7 créneaux hebdomadaires -->
       <div id="calendarGrid" class="slots-grid">
         <!-- Généré dynamiquement par calendar.js -->
       </div>
@@ -172,10 +172,17 @@
         <!-- Champs masqués -->
         <input type="hidden" id="postSemaine">
         <input type="hidden" id="postJourCible">
-        <input type="hidden" id="postType">
 
         <div class="modal-body">
           <div class="form-row">
+            <div class="form-group">
+              <label for="postType">Format Instagram</label>
+              <select id="postType" required>
+                <option value="story">📱 Story 24h (Format 9:16)</option>
+                <option value="post">🖼️ Post Feed (Format 4:5 / 1:1)</option>
+              </select>
+            </div>
+
             <div class="form-group">
               <label for="postStatut">Statut du créneau</label>
               <select id="postStatut" required>
@@ -184,21 +191,23 @@
                 <option value="publie">✅ Publié sur Instagram</option>
               </select>
             </div>
+          </div>
 
+          <div class="form-row">
             <div class="form-group">
               <label for="postTypeContenu">Type de contenu</label>
               <select id="postTypeContenu" required>
                 <option value="produit">🍽️ Produit / Plat Vedette</option>
                 <option value="coulisses">👨‍🍳 Coulisses / Équipe</option>
-                <option value="promo">🏷️ Promo / Brunch / Offre</option>
-                <option value="evenement">🎉 Événement / Soirée</option>
+                <option value="promo">🏷️ Promo / Offre / Brunch</option>
+                <option value="evenement">🎉 Événement / Soirée / Afterwork</option>
               </select>
             </div>
-          </div>
 
-          <div class="form-group">
-            <label for="postTitre">Titre ou Thématique</label>
-            <input type="text" id="postTitre" placeholder="Ex: Entrecôte grillée, Ambiance terrasse..." required>
+            <div class="form-group">
+              <label for="postTitre">Titre ou Thématique</label>
+              <input type="text" id="postTitre" placeholder="Ex: Entrecôte grillée, Ambiance terrasse..." required>
+            </div>
           </div>
 
           <div class="form-group">
