@@ -10,6 +10,7 @@ const App = {
   currentEditingTemplate: null,
   isMediaPickerMode: false,
   activeLibFilter: 'all',
+  currentUser: null,
 
   async init() {
     console.log('[App] Démarrage du module Réseaux Sociaux Grey Corner...');
@@ -23,19 +24,266 @@ const App = {
     // 3. Initialiser le calendrier sur la semaine courante
     const initialWeek = DateUtils.getIsoWeekString();
     CalendarModule.init(initialWeek);
-    await CalendarModule.render();
 
-    // 4. Initialiser le dashboard
-    await DashboardModule.render();
+    // 4. Initialiser et écouter l'authentification (Contenu sensible)
+    await this.initAuth();
 
-    // 5. Vérifier les alertes de stories 24h
-    await this.checkDailyStoryAlerts();
-
-    // 6. Mettre à jour le compteur de la réserve de photos
-    await this.updateMediaBadge();
-
-    // 7. Attacher les événements globaux
+    // 5. Attacher les événements globaux
     this.bindGlobalEvents();
+  },
+
+  async initAuth() {
+    // Écouter les changements d'état Supabase Auth
+    DataService.onAuthStateChange(async (event, session) => {
+      console.log('[Auth] Événement Supabase Auth:', event, session?.user?.email);
+      if (session && session.user) {
+        await this.setAuthenticatedState(session.user);
+      } else if (event === 'SIGNED_OUT') {
+        this.setUnauthenticatedState();
+      }
+    });
+
+    // Vérifier si un utilisateur a déjà une session active
+    const user = await DataService.getCurrentUser();
+    if (user) {
+      await this.setAuthenticatedState(user);
+    } else {
+      this.setUnauthenticatedState();
+    }
+
+    // Brancher les formulaires de l'Auth Gate
+    this.bindAuthEvents();
+  },
+
+  async setAuthenticatedState(user) {
+    this.currentUser = user;
+    document.body.classList.remove('auth-locked');
+    document.body.classList.add('auth-unlocked');
+
+    const emailDisplay = document.getElementById('userEmailDisplay');
+    if (emailDisplay) {
+      emailDisplay.textContent = user.email || 'Équipe Grey Corner';
+      emailDisplay.title = user.email || '';
+    }
+
+    const badge = document.getElementById('userProfileBadge');
+    if (badge) badge.style.display = 'inline-flex';
+
+    const authGate = document.getElementById('authGate');
+    if (authGate) authGate.style.display = 'none';
+
+    // Déverrouiller et rafraîchir le contenu sensible
+    try {
+      await CalendarModule.render();
+      await DashboardModule.render();
+      await this.checkDailyStoryAlerts();
+      await this.updateMediaBadge();
+    } catch (e) {
+      console.warn('Erreur rendu contenu sensible post-auth:', e);
+    }
+  },
+
+  setUnauthenticatedState() {
+    this.currentUser = null;
+    document.body.classList.remove('auth-unlocked');
+    document.body.classList.add('auth-locked');
+
+    const badge = document.getElementById('userProfileBadge');
+    if (badge) badge.style.display = 'none';
+
+    const authGate = document.getElementById('authGate');
+    if (authGate) authGate.style.display = 'flex';
+
+    // Réinitialiser les messages d'état
+    const magicFeedback = document.getElementById('magicFeedback');
+    if (magicFeedback) {
+      magicFeedback.style.display = 'none';
+      magicFeedback.className = 'auth-feedback';
+      magicFeedback.innerHTML = '';
+    }
+    const pwdFeedback = document.getElementById('pwdFeedback');
+    if (pwdFeedback) {
+      pwdFeedback.style.display = 'none';
+      pwdFeedback.className = 'auth-feedback';
+      pwdFeedback.innerHTML = '';
+    }
+  },
+
+  bindAuthEvents() {
+    const tabMagic = document.getElementById('tabMagicLink');
+    const tabPassword = document.getElementById('tabPassword');
+    const formMagic = document.getElementById('formMagicLink');
+    const formPassword = document.getElementById('formPassword');
+
+    tabMagic?.addEventListener('click', () => {
+      tabMagic.classList.add('active');
+      tabMagic.setAttribute('aria-selected', 'true');
+      tabPassword?.classList.remove('active');
+      tabPassword?.setAttribute('aria-selected', 'false');
+      if (formMagic) formMagic.style.display = 'flex';
+      if (formPassword) formPassword.style.display = 'none';
+    });
+
+    tabPassword?.addEventListener('click', () => {
+      tabPassword.classList.add('active');
+      tabPassword.setAttribute('aria-selected', 'true');
+      tabMagic?.classList.remove('active');
+      tabMagic?.setAttribute('aria-selected', 'false');
+      if (formPassword) formPassword.style.display = 'flex';
+      if (formMagic) formMagic.style.display = 'none';
+    });
+
+    // Formulaire Lien Magique (Email direct)
+    formMagic?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('magicEmail')?.value.trim();
+      const btnSubmit = document.getElementById('btnSubmitMagic');
+      const feedback = document.getElementById('magicFeedback');
+
+      if (!email || !email.includes('@')) {
+        this.showAuthFeedback(feedback, 'error', 'Veuillez renseigner une adresse email valide.');
+        return;
+      }
+
+      try {
+        if (btnSubmit) {
+          btnSubmit.disabled = true;
+          btnSubmit.innerHTML = '<span>⏳</span> Envoi en cours...';
+        }
+        this.showAuthFeedback(feedback, 'info', 'Génération et envoi du lien sécurisé...');
+
+        const result = await DataService.signInWithMagicLink(email);
+
+        if (DataService.isDemo) {
+          this.showAuthFeedback(feedback, 'success', '✨ [Mode Démo] Connexion instantanée réussie ! Chargement...');
+          setTimeout(async () => {
+            await this.setAuthenticatedState(result.user || { email });
+            this.showToast(`Bienvenue, ${email} !`);
+          }, 600);
+        } else {
+          this.showAuthFeedback(feedback, 'success', `📨 <strong>Lien magique envoyé avec succès !</strong><br>Veuillez ouvrir votre boîte mail <u>${CalendarModule.escapeHtml(email)}</u> et cliquer sur le lien pour vous connecter automatiquement.`);
+        }
+      } catch (err) {
+        console.error('[Auth] Erreur magic link:', err);
+        this.showAuthFeedback(feedback, 'error', `⚠️ Erreur : ${err.message || 'Impossible d\'envoyer le lien magique.'}`);
+      } finally {
+        if (btnSubmit) {
+          btnSubmit.disabled = false;
+          btnSubmit.innerHTML = '<span>📨</span> M\'envoyer mon lien de connexion';
+        }
+      }
+    });
+
+    // Formulaire Mot de passe (Connexion)
+    formPassword?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('pwdEmail')?.value.trim();
+      const password = document.getElementById('pwdPassword')?.value;
+      const btnSubmit = document.getElementById('btnSubmitPassword');
+      const feedback = document.getElementById('pwdFeedback');
+
+      if (!email || !password) {
+        this.showAuthFeedback(feedback, 'error', 'Veuillez saisir votre email et votre mot de passe.');
+        return;
+      }
+
+      try {
+        if (btnSubmit) {
+          btnSubmit.disabled = true;
+          btnSubmit.innerHTML = '<span>⏳</span> Connexion en cours...';
+        }
+        this.showAuthFeedback(feedback, 'info', 'Vérification de vos identifiants...');
+
+        const user = await DataService.signInWithEmailPassword(email, password);
+        this.showAuthFeedback(feedback, 'success', 'Connexion réussie ! Déverrouillage de l\'espace...');
+        setTimeout(async () => {
+          await this.setAuthenticatedState(user);
+          this.showToast(`Bienvenue, ${user.email} !`);
+        }, 500);
+      } catch (err) {
+        console.error('[Auth] Erreur connexion mot de passe:', err);
+        const msg = err.message || '';
+        if (msg.includes('Invalid login credentials')) {
+          this.showAuthFeedback(feedback, 'error', 'Identifiants invalides. Vérifiez l\'adresse email ou le mot de passe, ou cliquez sur "Créer un compte".');
+        } else {
+          this.showAuthFeedback(feedback, 'error', `⚠️ Erreur : ${msg}`);
+        }
+      } finally {
+        if (btnSubmit) {
+          btnSubmit.disabled = false;
+          btnSubmit.innerHTML = '<span>🔐</span> Se connecter';
+        }
+      }
+    });
+
+    // Inscription (Création d'un compte)
+    document.getElementById('btnSubmitSignUp')?.addEventListener('click', async () => {
+      const email = document.getElementById('pwdEmail')?.value.trim();
+      const password = document.getElementById('pwdPassword')?.value;
+      const btnSignUp = document.getElementById('btnSubmitSignUp');
+      const feedback = document.getElementById('pwdFeedback');
+
+      if (!email || !password) {
+        this.showAuthFeedback(feedback, 'error', 'Veuillez renseigner un email et un mot de passe pour créer votre compte.');
+        return;
+      }
+
+      if (password.length < 6) {
+        this.showAuthFeedback(feedback, 'error', 'Le mot de passe doit comporter au moins 6 caractères.');
+        return;
+      }
+
+      try {
+        if (btnSignUp) {
+          btnSignUp.disabled = true;
+          btnSignUp.innerHTML = '<span>⏳</span> Création...';
+        }
+        this.showAuthFeedback(feedback, 'info', 'Création du compte en cours...');
+
+        const user = await DataService.signUpWithEmailPassword(email, password);
+        if (DataService.isDemo) {
+          this.showAuthFeedback(feedback, 'success', '✨ [Mode Démo] Compte créé et session activée !');
+          setTimeout(async () => {
+            await this.setAuthenticatedState(user);
+            this.showToast(`Bienvenue, ${user.email} !`);
+          }, 500);
+        } else {
+          this.showAuthFeedback(feedback, 'success', `✉️ <strong>Compte créé avec succès !</strong><br>Si la confirmation d'email est requise sur votre projet Supabase, vérifiez la boîte <u>${CalendarModule.escapeHtml(email)}</u> pour valider votre compte.`);
+        }
+      } catch (err) {
+        console.error('[Auth] Erreur inscription:', err);
+        this.showAuthFeedback(feedback, 'error', `⚠️ Erreur d'inscription : ${err.message}`);
+      } finally {
+        if (btnSignUp) {
+          btnSignUp.disabled = false;
+          btnSignUp.innerHTML = '<span>✨</span> Créer un compte';
+        }
+      }
+    });
+
+    // Déconnexion
+    document.getElementById('btnLogout')?.addEventListener('click', async () => {
+      if (confirm('Voulez-vous vous déconnecter et reverrouiller le contenu ?')) {
+        await DataService.signOut();
+        this.setUnauthenticatedState();
+        this.showToast('🚪 Espace déconnecté et reverrouillé avec succès.');
+      }
+    });
+
+    // Accès visiteur / démo
+    document.getElementById('btnBypassDemo')?.addEventListener('click', async () => {
+      const demoUser = { email: 'visiteur@greycorner.fr', id: 'demo-visiteur', role: 'demo' };
+      localStorage.setItem('gc_auth_demo_user', JSON.stringify(demoUser));
+      await this.setAuthenticatedState(demoUser);
+      this.showToast('🧪 Accès en mode Démo Local accordé.');
+    });
+  },
+
+  showAuthFeedback(el, type, html) {
+    if (!el) return;
+    el.className = `auth-feedback ${type}`;
+    el.innerHTML = html;
+    el.style.display = 'block';
   },
 
   updateModeBadge() {

@@ -885,6 +885,102 @@ const DataService = {
       target.post_id = postId;
       this.saveLocalMediaStore(all);
     }
+  },
+
+  // ─── AUTHENTIFICATION PAR EMAIL (SUPABASE AUTH & SESSION) ───
+  async getCurrentUser() {
+    if (!this.isDemo && this.client) {
+      try {
+        const { data: { user }, error } = await this.client.auth.getUser();
+        if (error) return null;
+        return user;
+      } catch (e) {
+        return null;
+      }
+    }
+    const saved = localStorage.getItem('gc_auth_demo_user');
+    return saved ? JSON.parse(saved) : null;
+  },
+
+  async getSession() {
+    if (!this.isDemo && this.client) {
+      try {
+        const { data: { session }, error } = await this.client.auth.getSession();
+        if (error) return null;
+        return session;
+      } catch (e) {
+        return null;
+      }
+    }
+    const user = await this.getCurrentUser();
+    return user ? { user } : null;
+  },
+
+  async signInWithEmailPassword(email, password) {
+    if (!this.isDemo && this.client) {
+      const { data, error } = await this.client.auth.signInWithPassword({
+        email: email.trim(),
+        password: password
+      });
+      if (error) throw error;
+      return data.user;
+    }
+    // Simulation mode démo
+    const demoUser = { email: email.trim(), id: 'demo-user-1', app_metadata: { role: 'admin' } };
+    localStorage.setItem('gc_auth_demo_user', JSON.stringify(demoUser));
+    return demoUser;
+  },
+
+  async signUpWithEmailPassword(email, password) {
+    if (!this.isDemo && this.client) {
+      const { data, error } = await this.client.auth.signUp({
+        email: email.trim(),
+        password: password,
+        options: {
+          emailRedirectTo: window.location.origin
+        }
+      });
+      if (error) throw error;
+      return data.user;
+    }
+    const demoUser = { email: email.trim(), id: 'demo-user-1', app_metadata: { role: 'admin' } };
+    localStorage.setItem('gc_auth_demo_user', JSON.stringify(demoUser));
+    return demoUser;
+  },
+
+  async signInWithMagicLink(email) {
+    if (!this.isDemo && this.client) {
+      const { data, error } = await this.client.auth.signInWithOtp({
+        email: email.trim(),
+        options: {
+          emailRedirectTo: window.location.origin
+        }
+      });
+      if (error) throw error;
+      return data;
+    }
+    const demoUser = { email: email.trim(), id: 'demo-user-1' };
+    localStorage.setItem('gc_auth_demo_user', JSON.stringify(demoUser));
+    return { user: demoUser };
+  },
+
+  async signOut() {
+    if (!this.isDemo && this.client) {
+      try {
+        await this.client.auth.signOut();
+      } catch (e) {
+        console.warn('Erreur lors du signOut Supabase', e);
+      }
+    }
+    localStorage.removeItem('gc_auth_demo_user');
+  },
+
+  onAuthStateChange(callback) {
+    if (!this.isDemo && this.client) {
+      const { data: { subscription } } = this.client.auth.onAuthStateChange(callback);
+      return subscription;
+    }
+    return { unsubscribe: () => {} };
   }
 };
 
