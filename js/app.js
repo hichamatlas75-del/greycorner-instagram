@@ -96,102 +96,34 @@ const App = {
     if (authGate) authGate.style.display = 'flex';
 
     // Réinitialiser les messages d'état
-    const magicFeedback = document.getElementById('magicFeedback');
-    if (magicFeedback) {
-      magicFeedback.style.display = 'none';
-      magicFeedback.className = 'auth-feedback';
-      magicFeedback.innerHTML = '';
-    }
-    const pwdFeedback = document.getElementById('pwdFeedback');
-    if (pwdFeedback) {
-      pwdFeedback.style.display = 'none';
-      pwdFeedback.className = 'auth-feedback';
-      pwdFeedback.innerHTML = '';
+    const feedback = document.getElementById('authFeedback');
+    if (feedback) {
+      feedback.style.display = 'none';
+      feedback.className = 'auth-feedback';
+      feedback.innerHTML = '';
     }
   },
 
   bindAuthEvents() {
-    const tabMagic = document.getElementById('tabMagicLink');
-    const tabPassword = document.getElementById('tabPassword');
-    const formMagic = document.getElementById('formMagicLink');
-    const formPassword = document.getElementById('formPassword');
+    const formLogin = document.getElementById('authLoginForm');
+    const feedback = document.getElementById('authFeedback');
 
-    tabMagic?.addEventListener('click', () => {
-      tabMagic.classList.add('active');
-      tabMagic.setAttribute('aria-selected', 'true');
-      tabPassword?.classList.remove('active');
-      tabPassword?.setAttribute('aria-selected', 'false');
-      if (formMagic) formMagic.style.display = 'flex';
-      if (formPassword) formPassword.style.display = 'none';
-    });
-
-    tabPassword?.addEventListener('click', () => {
-      tabPassword.classList.add('active');
-      tabPassword.setAttribute('aria-selected', 'true');
-      tabMagic?.classList.remove('active');
-      tabMagic?.setAttribute('aria-selected', 'false');
-      if (formPassword) formPassword.style.display = 'flex';
-      if (formMagic) formMagic.style.display = 'none';
-    });
-
-    // Formulaire Lien Magique (Email direct)
-    formMagic?.addEventListener('submit', async (e) => {
+    // Connexion Email & Mot de passe
+    formLogin?.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = document.getElementById('magicEmail')?.value.trim();
-      const btnSubmit = document.getElementById('btnSubmitMagic');
-      const feedback = document.getElementById('magicFeedback');
-
-      if (!email || !email.includes('@')) {
-        this.showAuthFeedback(feedback, 'error', 'Veuillez renseigner une adresse email valide.');
-        return;
-      }
-
-      try {
-        if (btnSubmit) {
-          btnSubmit.disabled = true;
-          btnSubmit.innerHTML = '<span>⏳</span> Envoi en cours...';
-        }
-        this.showAuthFeedback(feedback, 'info', 'Génération et envoi du lien sécurisé...');
-
-        const result = await DataService.signInWithMagicLink(email);
-
-        if (DataService.isDemo) {
-          this.showAuthFeedback(feedback, 'success', '✨ [Mode Démo] Connexion instantanée réussie ! Chargement...');
-          setTimeout(async () => {
-            await this.setAuthenticatedState(result.user || { email });
-            this.showToast(`Bienvenue, ${email} !`);
-          }, 600);
-        } else {
-          this.showAuthFeedback(feedback, 'success', `📨 <strong>Lien magique envoyé avec succès !</strong><br>Veuillez ouvrir votre boîte mail <u>${CalendarModule.escapeHtml(email)}</u> et cliquer sur le lien pour vous connecter automatiquement.`);
-        }
-      } catch (err) {
-        console.error('[Auth] Erreur magic link:', err);
-        this.showAuthFeedback(feedback, 'error', `⚠️ Erreur : ${err.message || 'Impossible d\'envoyer le lien magique.'}`);
-      } finally {
-        if (btnSubmit) {
-          btnSubmit.disabled = false;
-          btnSubmit.innerHTML = '<span>📨</span> M\'envoyer mon lien de connexion';
-        }
-      }
-    });
-
-    // Formulaire Mot de passe (Connexion)
-    formPassword?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('pwdEmail')?.value.trim();
-      const password = document.getElementById('pwdPassword')?.value;
-      const btnSubmit = document.getElementById('btnSubmitPassword');
-      const feedback = document.getElementById('pwdFeedback');
+      const email = document.getElementById('authEmail')?.value.trim();
+      const password = document.getElementById('authPassword')?.value;
+      const btnSubmit = document.getElementById('btnSubmitLogin');
 
       if (!email || !password) {
-        this.showAuthFeedback(feedback, 'error', 'Veuillez saisir votre email et votre mot de passe.');
+        this.showAuthFeedback(feedback, 'error', 'Veuillez saisir votre adresse email et votre mot de passe.');
         return;
       }
 
       try {
         if (btnSubmit) {
           btnSubmit.disabled = true;
-          btnSubmit.innerHTML = '<span>⏳</span> Connexion en cours...';
+          btnSubmit.innerHTML = '<span>⏳</span> Connexion...';
         }
         this.showAuthFeedback(feedback, 'info', 'Vérification de vos identifiants...');
 
@@ -200,12 +132,12 @@ const App = {
         setTimeout(async () => {
           await this.setAuthenticatedState(user);
           this.showToast(`Bienvenue, ${user.email} !`);
-        }, 500);
+        }, 400);
       } catch (err) {
-        console.error('[Auth] Erreur connexion mot de passe:', err);
+        console.error('[Auth] Erreur connexion:', err);
         const msg = err.message || '';
         if (msg.includes('Invalid login credentials')) {
-          this.showAuthFeedback(feedback, 'error', 'Identifiants invalides. Vérifiez l\'adresse email ou le mot de passe, ou cliquez sur "Créer un compte".');
+          this.showAuthFeedback(feedback, 'error', 'Identifiants incorrects. Vérifiez l\'email ou le mot de passe, ou cliquez sur "Créer un compte".');
         } else {
           this.showAuthFeedback(feedback, 'error', `⚠️ Erreur : ${msg}`);
         }
@@ -217,15 +149,14 @@ const App = {
       }
     });
 
-    // Inscription (Création d'un compte)
+    // Inscription / Création de compte
     document.getElementById('btnSubmitSignUp')?.addEventListener('click', async () => {
-      const email = document.getElementById('pwdEmail')?.value.trim();
-      const password = document.getElementById('pwdPassword')?.value;
+      const email = document.getElementById('authEmail')?.value.trim();
+      const password = document.getElementById('authPassword')?.value;
       const btnSignUp = document.getElementById('btnSubmitSignUp');
-      const feedback = document.getElementById('pwdFeedback');
 
       if (!email || !password) {
-        this.showAuthFeedback(feedback, 'error', 'Veuillez renseigner un email et un mot de passe pour créer votre compte.');
+        this.showAuthFeedback(feedback, 'error', 'Veuillez renseigner un email et un mot de passe pour créer un compte.');
         return;
       }
 
@@ -247,7 +178,7 @@ const App = {
           setTimeout(async () => {
             await this.setAuthenticatedState(user);
             this.showToast(`Bienvenue, ${user.email} !`);
-          }, 500);
+          }, 400);
         } else {
           this.showAuthFeedback(feedback, 'success', `✉️ <strong>Compte créé avec succès !</strong><br>Si la confirmation d'email est requise sur votre projet Supabase, vérifiez la boîte <u>${CalendarModule.escapeHtml(email)}</u> pour valider votre compte.`);
         }

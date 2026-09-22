@@ -2526,46 +2526,7 @@ button:active,
   margin: 0;
 }
 
-/* Onglets d'authentification */
-.auth-tabs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  background: var(--paper-soft);
-  border: 1px solid var(--line-soft);
-  border-radius: var(--radius-sm);
-  padding: 4px;
-  gap: 4px;
-}
-
-.auth-tab {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  background: transparent;
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: 9px 12px;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--ink-soft);
-  cursor: pointer;
-  transition: all 0.18s ease;
-  font-family: 'Inter', sans-serif;
-}
-
-.auth-tab:hover {
-  color: var(--ink);
-}
-
-.auth-tab.active {
-  background: var(--paper-card);
-  color: var(--teal);
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--line);
-}
-
-/* Formulaires d'authentification */
+/* Formulaire d'authentification */
 .auth-form {
   display: flex;
   flex-direction: column;
@@ -2740,10 +2701,6 @@ body.auth-unlocked #userProfileBadge {
   .auth-card {
     padding: 22px 18px;
     gap: 16px;
-  }
-
-  .auth-tabs {
-    grid-template-columns: 1fr;
   }
 
   .auth-form-actions {

@@ -60,60 +60,37 @@
         <div class="auth-brand-icon">GC</div>
         <div class="auth-brand-text">
           <h2 id="authGateTitle">Grey Corner<span>.</span>Insta</h2>
-          <div class="auth-brand-sub">Espace Privé — Gestion des Réseaux Sociaux</div>
+          <div class="auth-brand-sub">Espace Privé — Réseaux Sociaux</div>
         </div>
       </div>
 
       <div class="auth-notice">
         <span class="auth-notice-icon">🔒</span>
         <div class="auth-notice-content">
-          <strong>Accès Sécurisé — Données Confidentielles</strong>
-          <p>Le calendrier éditorial, la réserve de visuels et les statistiques d'engagement sont réservés à l'équipe Grey Corner. Veuillez vous authentifier par email pour déverrouiller l'espace.</p>
+          <strong>Accès Réservé à l'Équipe</strong>
+          <p>Connectez-vous avec votre adresse email pour accéder au calendrier de publication et aux statistiques.</p>
         </div>
       </div>
 
-      <div class="auth-tabs" role="tablist">
-        <button type="button" class="auth-tab active" id="tabMagicLink" role="tab" aria-selected="true" data-target="formMagicLink">
-          <span>📨</span> Lien Magique (Email direct)
-        </button>
-        <button type="button" class="auth-tab" id="tabPassword" role="tab" aria-selected="false" data-target="formPassword">
-          <span>🔐</span> Email & Mot de passe
-        </button>
-      </div>
-
-      <!-- Formulaire 1 : Lien Magique OTP (Supabase signInWithOtp) -->
-      <form id="formMagicLink" class="auth-form active" novalidate>
-        <p class="auth-form-help">Saisissez votre adresse email : vous recevrez un lien de connexion instantané directement dans votre boîte de réception, sans mot de passe à mémoriser.</p>
+      <!-- Formulaire unique : Authentification par Email -->
+      <form id="authLoginForm" class="auth-form" novalidate>
         <div class="form-group">
-          <label for="magicEmail">Adresse Email Professionnelle</label>
-          <input type="email" id="magicEmail" placeholder="contact@greycorner.fr" required autocomplete="email">
-        </div>
-        <button type="submit" id="btnSubmitMagic" class="btn-auth-primary">
-          <span>📨</span> M'envoyer mon lien de connexion
-        </button>
-        <div id="magicFeedback" class="auth-feedback" style="display:none;"></div>
-      </form>
-
-      <!-- Formulaire 2 : Email & Mot de passe (Supabase signInWithPassword / signUp) -->
-      <form id="formPassword" class="auth-form" style="display:none;" novalidate>
-        <p class="auth-form-help">Connectez-vous avec vos identifiants ou créez un accès sécurisé pour un membre de l'équipe.</p>
-        <div class="form-group">
-          <label for="pwdEmail">Adresse Email</label>
-          <input type="email" id="pwdEmail" placeholder="equipe@greycorner.fr" required autocomplete="email">
+          <label for="authEmail">Adresse Email</label>
+          <input type="email" id="authEmail" placeholder="equipe@greycorner.fr" required autocomplete="email">
         </div>
         <div class="form-group">
-          <label for="pwdPassword">Mot de passe</label>
-          <input type="password" id="pwdPassword" placeholder="••••••••" required autocomplete="current-password">
+          <label for="authPassword">Mot de passe</label>
+          <input type="password" id="authPassword" placeholder="••••••••" required autocomplete="current-password">
         </div>
         <div class="auth-form-actions">
-          <button type="submit" id="btnSubmitPassword" class="btn-auth-primary">
+          <button type="submit" id="btnSubmitLogin" class="btn-auth-primary">
             <span>🔐</span> Se connecter
           </button>
           <button type="button" id="btnSubmitSignUp" class="btn-auth-secondary">
             <span>✨</span> Créer un compte
           </button>
         </div>
-        <div id="pwdFeedback" class="auth-feedback" style="display:none;"></div>
+        <div id="authFeedback" class="auth-feedback" style="display:none;"></div>
       </form>
     </div>
   </section>
