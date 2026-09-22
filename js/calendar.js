@@ -122,9 +122,12 @@ const CalendarModule = {
         <p class="slot-theme-guide">${template.description}</p>
       </div>
 
-      <div class="slot-visual-container">
+      <div class="slot-visual-container ${hasImage ? 'has-lightbox' : ''}">
         ${hasImage 
-          ? `<img src="${post.visuel_url}" alt="Visuel" class="slot-thumb" loading="lazy" />` 
+          ? `<img src="${post.visuel_url}" alt="${this.escapeHtml(post.titre || template.label)}" class="slot-thumb" loading="lazy" data-lightbox="${post.visuel_url}" data-caption="${this.escapeHtml((template.label || '') + (post.titre ? ' — ' + post.titre : ''))}" />
+             <div class="slot-zoom-overlay" title="Cliquer pour agrandir en plein écran">
+               <span class="zoom-badge">🔍 Agrandir</span>
+             </div>` 
           : `<div class="slot-thumb-placeholder">
                <span class="placeholder-icon">📸</span>
                <span class="placeholder-text">${post ? 'Aucun visuel joint' : 'Créneau non initialisé'}</span>

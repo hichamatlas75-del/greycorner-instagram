@@ -249,15 +249,69 @@ const App = {
       this.copyTextToClipboard(caption);
     });
 
-    document.getElementById('btnModalDownloadImage')?.addEventListener('click', () => {
-      const url = document.getElementById('postVisuelUrl')?.value || '';
-      if (!url.trim()) {
-        this.showToast('Aucune image n\'est encore jointe à ce créneau.');
-        return;
+    // ─── ÉVÉNEMENTS DU LIGHTBOX (VISIONNEUSE PLEIN ÉCRAN) ───
+    document.addEventListener('click', (e) => {
+      // Ignorer les clics sur boutons, liens ou champs de saisie
+      if (e.target.closest('button, a, input, select, textarea')) return;
+
+      const trigger = e.target.closest('.has-lightbox, [data-lightbox], .slot-zoom-overlay, .media-zoom-overlay, .preview-zoom-overlay');
+      if (trigger) {
+        let img = trigger.tagName === 'IMG' ? trigger : trigger.querySelector('img');
+        if (img && img.src && !img.src.includes('placeholder')) {
+          e.stopPropagation();
+          const url = img.dataset.lightbox || img.src;
+          const caption = img.dataset.caption || img.alt || 'Visuel Grey Corner';
+          this.openLightbox(url, caption);
+        }
       }
-      const day = document.getElementById('postJourCible')?.value || 'post';
-      this.downloadImageFile(url, `greycorner-${day}`);
     });
+
+    document.getElementById('btnCloseLightbox')?.addEventListener('click', () => {
+      this.closeLightbox();
+    });
+
+    document.getElementById('lightboxStage')?.addEventListener('click', (e) => {
+      if (e.target.id === 'lightboxStage') {
+        this.closeLightbox();
+      }
+    });
+
+    document.getElementById('btnLightboxDownload')?.addEventListener('click', () => {
+      const img = document.getElementById('lightboxImg');
+      if (img && img.src) {
+        this.downloadImageFile(img.src, 'greycorner-visuel');
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        this.closeLightbox();
+      }
+    });
+  },
+
+  openLightbox(url, caption = '') {
+    if (!url) return;
+    const lightbox = document.getElementById('imageLightbox');
+    const imgEl = document.getElementById('lightboxImg');
+    const captionEl = document.getElementById('lightboxCaption');
+    const openTabBtn = document.getElementById('btnLightboxOpenTab');
+
+    if (!lightbox || !imgEl) return;
+
+    imgEl.src = url;
+    if (captionEl) captionEl.textContent = caption || 'Visuel Grey Corner';
+    if (openTabBtn) openTabBtn.href = url;
+
+    lightbox.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  },
+
+  closeLightbox() {
+    const lightbox = document.getElementById('imageLightbox');
+    if (!lightbox) return;
+    lightbox.classList.remove('active');
+    document.body.style.overflow = '';
   },
 
   async copyTextToClipboard(text) {
@@ -339,10 +393,13 @@ const App = {
 
     if (url && url.trim() !== '') {
       previewImg.src = url;
+      previewImg.dataset.lightbox = url;
+      previewImg.dataset.caption = document.getElementById('postTitre')?.value || 'Aperçu du visuel';
       previewWrapper.style.display = 'block';
       uploadPlaceholder.style.display = 'none';
     } else {
       previewImg.src = '';
+      previewImg.dataset.lightbox = '';
       previewWrapper.style.display = 'none';
       uploadPlaceholder.style.display = 'flex';
     }
@@ -638,9 +695,12 @@ const App = {
 
       return `
         <div class="media-card ${isDispo ? 'is-available' : 'is-used'}" data-media-id="${item.id}">
-          <div class="media-thumb-wrap">
-            <img src="${item.url}" alt="${item.titre || 'Plat'}" loading="lazy">
+          <div class="media-thumb-wrap has-lightbox" title="Cliquer pour agrandir la photo">
+            <img src="${item.url}" alt="${item.titre || 'Plat'}" loading="lazy" data-lightbox="${item.url}" data-caption="${CalendarModule.escapeHtml(item.titre || 'Photo en réserve')}">
             ${statusBadge}
+            <div class="media-zoom-overlay">
+              <span>🔍</span>
+            </div>
           </div>
           <div class="media-card-body">
             <h4 class="media-card-title">${CalendarModule.escapeHtml(item.titre || 'Plat sans titre')}</h4>

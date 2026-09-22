@@ -251,8 +251,11 @@
                 <span id="uploadHintText" class="upload-hint-title">Cliquez ou glissez une image ici</span>
                 <span class="upload-hint-sub">JPG, PNG, WebP — Stocké sur Supabase Storage</span>
               </div>
-              <div id="imagePreviewWrapper" class="image-preview-wrapper" style="display:none">
+              <div id="imagePreviewWrapper" class="image-preview-wrapper has-lightbox" style="display:none" title="Cliquer pour agrandir le visuel">
                 <img id="previewImg" alt="Prévisualisation">
+                <div class="preview-zoom-overlay">
+                  <span>🔍 Agrandir</span>
+                </div>
                 <button type="button" id="btnRemoveImage" class="btn-remove-image">Supprimer</button>
               </div>
             </div>
@@ -442,6 +445,25 @@
           </div>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- LIGHTBOX / VISIONNEUSE GRAND FORMAT POUR LES IMAGES -->
+  <div id="imageLightbox" class="lightbox-overlay" role="dialog" aria-modal="true" aria-label="Visualiseur plein écran">
+    <div class="lightbox-toolbar">
+      <div id="lightboxCaption" class="lightbox-caption">Visuel Grey Corner</div>
+      <div class="lightbox-actions">
+        <button type="button" id="btnLightboxDownload" class="btn-lightbox-action" title="Télécharger l'image">
+          <span>⬇️</span> Télécharger
+        </button>
+        <a id="btnLightboxOpenTab" href="#" target="_blank" rel="noopener noreferrer" class="btn-lightbox-action" title="Ouvrir l'image originale dans un nouvel onglet">
+          <span>↗️</span> Plein écran
+        </a>
+        <button type="button" id="btnCloseLightbox" class="btn-lightbox-close" title="Fermer (Échap)">✕</button>
+      </div>
+    </div>
+    <div id="lightboxStage" class="lightbox-stage">
+      <img id="lightboxImg" src="" alt="Visuel agrandi" class="lightbox-image">
     </div>
   </div>
 
