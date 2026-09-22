@@ -177,6 +177,19 @@ const App = {
       await this.handleSavePost();
     });
 
+    // Outils d'aide à la légende
+    document.getElementById('btnSuggestCaption')?.addEventListener('click', () => {
+      this.suggestCaptionForCurrentSlot();
+    });
+
+    document.getElementById('btnAddHashtags')?.addEventListener('click', () => {
+      this.addHashtagsToCaption();
+    });
+
+    document.getElementById('btnBrowseTemplates')?.addEventListener('click', () => {
+      this.openCaptionTemplatesModal();
+    });
+
     // Gestion du téléversement d'image
     const fileInput = document.getElementById('postFileInput');
     const uploadArea = document.getElementById('uploadDropZone');
@@ -372,8 +385,124 @@ const App = {
 
     this.updateImagePreview(existingPost?.visuel_url || '');
     this.toggleMetricsVisibility(existingPost?.statut || 'idee');
+    this.updateFormatGuide(template.type);
 
     modal?.classList.add('active');
+  },
+
+  updateFormatGuide(type) {
+    const isStory = type === 'story';
+    const guideBox = document.getElementById('formatGuideBox');
+    const icon = document.getElementById('formatGuideIcon');
+    const title = document.getElementById('formatGuideTitle');
+    const desc = document.getElementById('formatGuideDesc');
+    const ratioBadge = document.getElementById('formatGuideRatioBadge');
+
+    if (!guideBox) return;
+
+    if (isStory) {
+      guideBox.className = 'format-guide-box is-story';
+      if (icon) icon.textContent = '📱';
+      if (title) title.textContent = 'Format Story : 9:16 Vertical (1080 × 1920 px)';
+      if (desc) desc.textContent = 'Format vertical plein écran. Laissez 15% d\'espace en haut et en bas pour que les boutons Instagram ne cachent pas votre plat.';
+      if (ratioBadge) {
+        ratioBadge.textContent = '9:16 Vertical';
+        ratioBadge.style.backgroundColor = '#F43F5E20';
+        ratioBadge.style.color = '#F43F5E';
+      }
+    } else {
+      guideBox.className = 'format-guide-box is-post';
+      if (icon) icon.textContent = '🖼️';
+      if (title) title.textContent = 'Format Post Feed : 4:5 Vertical (1080 × 1350 px) ou 1:1 Carré';
+      if (desc) desc.textContent = 'Le format 4:5 vertical maximise l\'attention et occupe 25% d\'espace en plus dans le fil Instagram !';
+      if (ratioBadge) {
+        ratioBadge.textContent = '4:5 / 1:1';
+        ratioBadge.style.backgroundColor = '#FF704320';
+        ratioBadge.style.color = '#FF7043';
+      }
+    }
+  },
+
+  suggestCaptionForCurrentSlot() {
+    const contentType = document.getElementById('postTypeContenu')?.value || 'produit';
+    
+    // Trouver le meilleur modèle
+    let template = Config.CAPTION_TEMPLATES.find(t => t.type === contentType);
+    if (!template) {
+      template = Config.CAPTION_TEMPLATES[0];
+    }
+
+    const legendeInput = document.getElementById('postLegende');
+    const titreInput = document.getElementById('postTitre');
+
+    if (legendeInput) {
+      legendeInput.value = template.caption;
+    }
+    if (titreInput && (!titreInput.value.trim() || titreInput.value.includes('—'))) {
+      titreInput.value = template.titleSuggestion;
+    }
+
+    this.showToast('💡 Légende captivante & hashtags insérés avec succès !');
+  },
+
+  addHashtagsToCaption() {
+    const contentType = document.getElementById('postTypeContenu')?.value || 'produit';
+    let pack = Config.HASHTAG_PACKS.general;
+    if (contentType === 'produit') pack = Config.HASHTAG_PACKS.viandes;
+    if (contentType === 'promo') pack = Config.HASHTAG_PACKS.brunch;
+    if (contentType === 'evenement' || contentType === 'coulisses') pack = Config.HASHTAG_PACKS.soiree;
+
+    const legendeInput = document.getElementById('postLegende');
+    if (legendeInput) {
+      if (legendeInput.value.includes('#GreyCorner')) {
+        this.showToast('Les hashtags sont déjà présents dans le texte.');
+        return;
+      }
+      legendeInput.value = (legendeInput.value.trim() + pack).trim();
+      this.showToast('#️⃣ Pack de hashtags Grey Corner ajouté !');
+    }
+  },
+
+  openCaptionTemplatesModal() {
+    const listEl = document.getElementById('captionTemplatesList');
+    if (!listEl) return;
+
+    listEl.innerHTML = Config.CAPTION_TEMPLATES.map(tpl => {
+      return `
+        <div class="caption-template-card">
+          <div class="template-card-header">
+            <h4>${tpl.label}</h4>
+            <span class="template-type-tag">${tpl.type}</span>
+          </div>
+          <p class="template-preview-text">${CalendarModule.escapeHtml(tpl.caption)}</p>
+          <button type="button" class="btn-apply-template" data-tpl-id="${tpl.id}">
+            <span>✨</span> Appliquer ce texte
+          </button>
+        </div>
+      `;
+    }).join('');
+
+    listEl.querySelectorAll('.btn-apply-template').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tplId = btn.dataset.tplId;
+        const tpl = Config.CAPTION_TEMPLATES.find(t => t.id === tplId);
+        if (tpl) {
+          const legendeInput = document.getElementById('postLegende');
+          const titreInput = document.getElementById('postTitre');
+          if (legendeInput) legendeInput.value = tpl.caption;
+          if (titreInput && (!titreInput.value.trim() || titreInput.value.includes('—'))) {
+            titreInput.value = tpl.titleSuggestion;
+          }
+          if (tpl.type) {
+            document.getElementById('postTypeContenu').value = tpl.type;
+          }
+          document.getElementById('captionTemplatesModal')?.classList.remove('active');
+          this.showToast(`✨ Modèle "${tpl.label}" appliqué !`);
+        }
+      });
+    });
+
+    document.getElementById('captionTemplatesModal')?.classList.add('active');
   },
 
   async handleSavePost() {

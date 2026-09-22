@@ -202,8 +202,33 @@
           </div>
 
           <div class="form-group">
-            <label for="postLegende">Légende Instagram / Notes internes</label>
-            <textarea id="postLegende" rows="3" placeholder="Texte de la publication ou instructions pour le service..."></textarea>
+            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px; margin-bottom:4px;">
+              <label for="postLegende" style="margin:0;">Légende Instagram & Texte</label>
+              <div class="caption-tools-bar">
+                <button type="button" id="btnSuggestCaption" class="btn-caption-tool" title="Inspirer un texte automatique">
+                  <span>💡</span> Suggérer texte
+                </button>
+                <button type="button" id="btnAddHashtags" class="btn-caption-tool" title="Ajouter les hashtags du restaurant">
+                  <span>#️⃣</span> +Hashtags
+                </button>
+                <button type="button" id="btnBrowseTemplates" class="btn-caption-tool" title="Choisir parmi les modèles">
+                  <span>📚</span> Modèles
+                </button>
+              </div>
+            </div>
+            <textarea id="postLegende" rows="4" placeholder="Texte de la publication ou instructions pour le service..."></textarea>
+          </div>
+
+          <!-- Guide & Optimisation Format Photo Instagram -->
+          <div id="formatGuideBox" class="format-guide-box">
+            <div class="format-guide-header">
+              <span id="formatGuideIcon" class="format-guide-icon">📱</span>
+              <div class="format-guide-titles">
+                <strong id="formatGuideTitle">Format Story : 9:16 Vertical (1080 × 1920 px)</strong>
+                <span id="formatGuideDesc" class="format-guide-desc">Idéal plein écran pour smartphone.</span>
+              </div>
+              <span id="formatGuideRatioBadge" class="format-ratio-pill">9:16</span>
+            </div>
           </div>
 
           <!-- Upload Visuel (Supabase Storage ou Local) -->
@@ -336,6 +361,30 @@
 
         <!-- Grille des photos de la réserve -->
         <div id="mediaLibraryGrid" class="library-grid">
+          <!-- Rendu dynamique par app.js -->
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-modal secondary" data-close-modal>Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALE DE SÉLECTION DES MODÈLES DE LÉGENDES -->
+  <div id="captionTemplatesModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="templatesModalTitle">
+    <div class="modal-card modal-card-large">
+      <div class="modal-header">
+        <h3 id="templatesModalTitle">📚 Modèles de Légendes Instagram Grey Corner</h3>
+        <button class="btn-close-modal" data-close-modal title="Fermer">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <p style="font-size:13.5px; color:var(--ink-soft); line-height:1.4;">
+          Choisissez un texte pré-rédigé captivant, adapté à la gastronomie et prêt à publier avec émojis et hashtags.
+        </p>
+
+        <div id="captionTemplatesList" class="caption-templates-grid">
           <!-- Rendu dynamique par app.js -->
         </div>
       </div>

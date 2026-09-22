@@ -741,6 +741,190 @@ body {
   border-color: #E1306C;
 }
 
+/* ─── OUTILS DE LÉGENDE & ASSISTANT DE RÉDACTION ─── */
+.caption-tools-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.btn-caption-tool {
+  background: var(--paper-soft);
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-family: 'Inter', sans-serif;
+  font-size: 11.5px;
+  font-weight: 500;
+  padding: 4px 9px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.btn-caption-tool:hover {
+  background: var(--teal-wash);
+  border-color: var(--teal);
+  color: var(--teal-deep);
+}
+
+/* ─── GUIDE & RECOMMANDATION FORMAT PHOTO INSTAGRAM ─── */
+.format-guide-box {
+  background: #FFFDF9;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--teal);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  transition: all 0.2s ease;
+}
+
+.format-guide-box.is-story {
+  border-left-color: #F43F5E;
+  background: rgba(244, 63, 94, 0.04);
+}
+
+.format-guide-box.is-post {
+  border-left-color: #FF7043;
+  background: rgba(255, 112, 67, 0.04);
+}
+
+.format-guide-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.format-guide-icon {
+  font-size: 22px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.format-guide-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.format-guide-titles strong {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.format-guide-desc {
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  line-height: 1.35;
+}
+
+.format-ratio-pill {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+  background: var(--paper-soft);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+/* ─── MODÈLES DE LÉGENDES INSTAGRAM ─── */
+.caption-templates-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-top: 12px;
+  max-height: 480px;
+  overflow-y: auto;
+  padding: 2px;
+}
+
+.caption-template-card {
+  background: #FFFDF9;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: all 0.18s ease;
+}
+
+.caption-template-card:hover {
+  border-color: var(--teal);
+  box-shadow: var(--shadow-sm);
+}
+
+.template-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.template-card-header h4 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0;
+}
+
+.template-type-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: var(--teal-wash);
+  color: var(--teal-deep);
+}
+
+.template-preview-text {
+  font-size: 12px;
+  color: var(--ink-soft);
+  line-height: 1.45;
+  white-space: pre-line;
+  max-height: 110px;
+  overflow-y: auto;
+  background: var(--paper-soft);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  margin: 0;
+}
+
+.btn-apply-template {
+  background: var(--teal);
+  border: 1px solid var(--teal-deep);
+  color: #FFF;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: auto;
+  transition: background 0.15s ease;
+}
+
+.btn-apply-template:hover {
+  background: var(--teal-deep);
+}
+
+
 /* ─── SECTION DASHBOARD DE SYNTHÈSE ─── */
 .dashboard-section-header {
   margin-bottom: 20px;
@@ -1879,7 +2063,31 @@ button:active,
     min-height: 44px;
     font-size: 13.5px;
   }
+
+  /* 7. ASSISTANT LÉGENDE & FORMATS SUR MOBILE */
+  .caption-tools-bar {
+    width: 100%;
+    margin-top: 4px;
+  }
+
+  .btn-caption-tool {
+    flex: 1;
+    min-height: 38px;
+    justify-content: center;
+    font-size: 12px;
+  }
+
+  .caption-templates-grid {
+    grid-template-columns: 1fr;
+    max-height: 55vh;
+  }
+
+  .format-guide-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
 }
+
 
 @media (max-width: 420px) {
   .nav-container {
