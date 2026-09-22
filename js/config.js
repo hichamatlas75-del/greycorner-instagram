@@ -14,9 +14,9 @@ const Config = {
     APP_MODE: 'gc_insta_app_mode' // 'supabase' ou 'demo'
   },
 
-  // Identifiants Supabase par défaut (peuvent être renseignés ici ou dans l'interface)
-  DEFAULT_SUPABASE_URL: '',
-  DEFAULT_SUPABASE_KEY: '',
+  // Identifiants Supabase par défaut (connectés au projet officiel Grey Corner)
+  DEFAULT_SUPABASE_URL: 'https://asbjvbyaohueievfabwz.supabase.co',
+  DEFAULT_SUPABASE_KEY: 'sb_publishable_V8RHogWWqbKdlDPbOXA7ow_iFQknQTD',
 
   // Les 4 créneaux obligatoires fixes de chaque semaine
   WEEKLY_TEMPLATE: [
