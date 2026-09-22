@@ -218,6 +218,24 @@
             <input type="url" id="postVisuelUrl" placeholder="Ou collez directement une URL d'image (ex: https://...)" style="margin-top:8px">
           </div>
 
+          <!-- Raccourcis d'aide à la publication rapide Instagram -->
+          <div class="publish-helper-box">
+            <div class="helper-box-title">
+              <span>🚀</span> <strong>Aide à la publication directe</strong>
+            </div>
+            <div class="helper-box-actions">
+              <button type="button" id="btnModalCopyCaption" class="btn-helper-action" title="Copier le texte de la légende">
+                <span>📋</span> Copier la légende
+              </button>
+              <button type="button" id="btnModalDownloadImage" class="btn-helper-action" title="Télécharger l'image sur votre appareil">
+                <span>⬇️</span> Télécharger l'image
+              </button>
+              <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" class="btn-helper-action insta" title="Ouvrir Instagram">
+                <span>📲</span> Ouvrir Instagram ↗
+              </a>
+            </div>
+          </div>
+
           <!-- Métriques d'engagement (activées dès que statut = publié) -->
           <fieldset id="metricsSection" class="metrics-fieldset disabled">
             <legend style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; text-transform:uppercase; color:var(--ink-soft); padding:0 4px;">

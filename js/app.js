@@ -152,6 +152,76 @@ const App = {
     document.getElementById('postStatut')?.addEventListener('change', (e) => {
       this.toggleMetricsVisibility(e.target.value);
     });
+
+    // Raccourcis de publication dans la modale
+    document.getElementById('btnModalCopyCaption')?.addEventListener('click', () => {
+      const caption = document.getElementById('postLegende')?.value || '';
+      if (!caption.trim()) {
+        this.showToast('Veuillez d\'abord saisir une légende.');
+        return;
+      }
+      this.copyTextToClipboard(caption);
+    });
+
+    document.getElementById('btnModalDownloadImage')?.addEventListener('click', () => {
+      const url = document.getElementById('postVisuelUrl')?.value || '';
+      if (!url.trim()) {
+        this.showToast('Aucune image n\'est encore jointe à ce créneau.');
+        return;
+      }
+      const day = document.getElementById('postJourCible')?.value || 'post';
+      this.downloadImageFile(url, `greycorner-${day}`);
+    });
+  },
+
+  async copyTextToClipboard(text) {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
+      this.showToast('📋 Légende copiée ! Vous pouvez la coller sur Instagram.');
+    } catch (e) {
+      this.showToast('Impossible de copier automatiquement le texte.');
+    }
+  },
+
+  async downloadImageFile(url, filename = 'greycorner-instagram') {
+    try {
+      this.showToast('⬇️ Téléchargement de l\'image...');
+      if (url.startsWith('data:')) {
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${filename}.jpg`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        this.showToast('⬇️ Image enregistrée !');
+        return;
+      }
+
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      const ext = url.split('.').pop().split(/[?#]/)[0] || 'jpg';
+      a.download = `${filename}.${ext.length <= 4 ? ext : 'jpg'}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(blobUrl);
+      this.showToast('⬇️ Image enregistrée !');
+    } catch (err) {
+      window.open(url, '_blank');
+      this.showToast('Image ouverte pour enregistrement.');
+    }
   },
 
   async processImageUpload(file) {

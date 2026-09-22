@@ -664,6 +664,83 @@ body {
   color: var(--danger);
 }
 
+.btn-slot-action.icon-only {
+  background: var(--paper-soft);
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  width: 34px;
+  height: 34px;
+  padding: 0;
+}
+
+.btn-slot-action.icon-only:hover {
+  background: var(--teal-wash);
+  border-color: var(--teal);
+  color: var(--teal-deep);
+}
+
+/* ─── BOÎTE D'AIDE À LA PUBLICATION INSTAGRAM ─── */
+.publish-helper-box {
+  background: var(--teal-wash);
+  border: 1px dashed var(--teal);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.helper-box-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--teal-deep);
+}
+
+.helper-box-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.btn-helper-action {
+  font-family: 'Inter', sans-serif;
+  font-size: 12.5px;
+  font-weight: 500;
+  padding: 7px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #FFF;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  text-decoration: none;
+  transition: all 0.18s ease;
+}
+
+.btn-helper-action:hover {
+  background: var(--paper);
+  border-color: var(--teal);
+  color: var(--teal-deep);
+}
+
+.btn-helper-action.insta {
+  background: #E1306C15;
+  border-color: #E1306C40;
+  color: #C13584;
+  font-weight: 600;
+}
+
+.btn-helper-action.insta:hover {
+  background: #E1306C;
+  color: #FFF;
+  border-color: #E1306C;
+}
+
 /* ─── SECTION DASHBOARD DE SYNTHÈSE ─── */
 .dashboard-section-header {
   margin-bottom: 20px;

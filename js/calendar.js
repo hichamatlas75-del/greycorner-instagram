@@ -175,8 +175,18 @@ const CalendarModule = {
 
       <div class="slot-footer">
         <button class="btn-slot-action primary" data-action="edit">
-          <span>✏️</span> ${post ? 'Éditer / Stats' : 'Créer ce créneau'}
+          <span>✏️</span> ${post ? 'Éditer / Stats' : 'Créer'}
         </button>
+        ${post?.legende ? `
+          <button class="btn-slot-action icon-only" data-action="copy-caption" title="Copier la légende Instagram">
+            <span>📋</span>
+          </button>
+        ` : ''}
+        ${hasImage ? `
+          <button class="btn-slot-action icon-only" data-action="download-image" title="Télécharger l'image du plat">
+            <span>⬇️</span>
+          </button>
+        ` : ''}
         ${post ? `
           <button class="btn-slot-action danger" data-action="delete" title="Supprimer">
             <span>🗑️</span>
@@ -189,6 +199,20 @@ const CalendarModule = {
     const btnEdit = card.querySelector('[data-action="edit"]');
     btnEdit?.addEventListener('click', () => {
       App.openEditModal(template, this.currentWeekStr, post);
+    });
+
+    const btnCopyCaption = card.querySelector('[data-action="copy-caption"]');
+    btnCopyCaption?.addEventListener('click', () => {
+      if (post?.legende) {
+        App.copyTextToClipboard(post.legende);
+      }
+    });
+
+    const btnDownload = card.querySelector('[data-action="download-image"]');
+    btnDownload?.addEventListener('click', () => {
+      if (post?.visuel_url) {
+        App.downloadImageFile(post.visuel_url, `greycorner-${template.jour_cible}`);
+      }
     });
 
     const btnDelete = card.querySelector('[data-action="delete"]');
