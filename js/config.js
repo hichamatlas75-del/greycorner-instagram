@@ -14,6 +14,10 @@ const Config = {
     APP_MODE: 'gc_insta_app_mode' // 'supabase' ou 'demo'
   },
 
+  // Identifiants Supabase par défaut (peuvent être renseignés ici ou dans l'interface)
+  DEFAULT_SUPABASE_URL: '',
+  DEFAULT_SUPABASE_KEY: '',
+
   // Les 4 créneaux obligatoires fixes de chaque semaine
   WEEKLY_TEMPLATE: [
     {

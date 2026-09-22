@@ -280,8 +280,8 @@ const DataService = {
    * Initialisation du service de données
    */
   async init() {
-    const url = localStorage.getItem(Config.STORAGE_KEYS.SUPABASE_URL);
-    const key = localStorage.getItem(Config.STORAGE_KEYS.SUPABASE_KEY);
+    const url = localStorage.getItem(Config.STORAGE_KEYS.SUPABASE_URL) || Config.DEFAULT_SUPABASE_URL;
+    const key = localStorage.getItem(Config.STORAGE_KEYS.SUPABASE_KEY) || Config.DEFAULT_SUPABASE_KEY;
 
     if (url && key && window.supabase) {
       try {
@@ -541,8 +541,8 @@ const DataService = {
 
   getCredentials() {
     return {
-      url: localStorage.getItem(Config.STORAGE_KEYS.SUPABASE_URL) || '',
-      key: localStorage.getItem(Config.STORAGE_KEYS.SUPABASE_KEY) || ''
+      url: localStorage.getItem(Config.STORAGE_KEYS.SUPABASE_URL) || Config.DEFAULT_SUPABASE_URL || '',
+      key: localStorage.getItem(Config.STORAGE_KEYS.SUPABASE_KEY) || Config.DEFAULT_SUPABASE_KEY || ''
     };
   },
 
