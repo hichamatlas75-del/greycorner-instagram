@@ -1,0 +1,12 @@
+# Système & OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Logs & temporaires
+*.log
+npm-debug.log*
+
+# Environnement local
+.env.local
+.env

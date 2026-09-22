@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grey Corner — Module Réseaux Sociaux (Instagram)</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Supabase JS Client depuis CDN (avec repli gracieux hors-ligne) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+  <!-- NAVIGATION SUPÉRIEURE -->
+  <header class="top-nav">
+    <div class="nav-container">
+      <div class="brand-block">
+        <div class="brand-icon">GC</div>
+        <div class="brand-text">
+          <h1>Grey Corner<span>.</span>Insta</h1>
+          <div class="brand-sub">Module Réseaux Sociaux — Hub</div>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <div id="modeBadge" class="mode-badge demo" title="Statut de connexion">
+          <span class="mode-dot"></span> Mode Démo Local
+        </div>
+        <button id="btnOpenConfig" class="btn-nav-icon" title="Configurer Supabase" aria-label="Paramètres">
+          ⚙️
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- BANNIÈRE D'ALERTE 24H (EXPIRATION STORIES) -->
+  <aside id="globalStoryAlert" class="alert-banner-bar" role="alert">
+    <span>🚨</span>
+    <div id="globalStoryAlertMsg"></div>
+  </aside>
+
+  <!-- CONTENU PRINCIPAL -->
+  <main class="main-shell">
+
+    <!-- 1. SECTION CALENDRIER HEBDOMADAIRE -->
+    <section class="calendar-section" aria-labelledby="calendarTitle">
+      <div class="calendar-section-header">
+        <div class="section-title-wrap">
+          <h2 id="calendarTitle">Calendrier Hebdomadaire</h2>
+          <p class="section-desc">Rythme fixe Instagram : 1 post lundi, 1 story vendredi, samedi et dimanche.</p>
+        </div>
+
+        <div class="week-navigator">
+          <button id="btnPrevWeek" class="btn-nav-arrow" title="Semaine précédente" aria-label="Semaine précédente">←</button>
+          <div class="week-display">
+            <span id="currentWeekLabel" class="week-title">Semaine --</span>
+            <div id="currentWeekSub" class="week-sub">--</div>
+          </div>
+          <button id="btnNextWeek" class="btn-nav-arrow" title="Semaine suivante" aria-label="Semaine suivante">→</button>
+          <button id="btnCurrentWeek" class="btn-today">Cette semaine</button>
+        </div>
+      </div>
+
+      <!-- Invite au pré-remplissage si créneaux manquants -->
+      <div id="prefillPrompt" class="prefill-prompt" style="display: none;">
+        <div class="prefill-text">
+          <strong>Cette semaine comporte des créneaux non initialisés.</strong><br>
+          Générez instantanément les 4 créneaux vides (statut Idée) pour éviter la page blanche.
+        </div>
+        <button id="btnPrefillWeek" class="btn-prefill">
+          <span>⚡</span> Pré-remplir la semaine
+        </button>
+      </div>
+
+      <!-- Grille des 4 créneaux -->
+      <div id="calendarGrid" class="slots-grid">
+        <!-- Généré dynamiquement par calendar.js -->
+      </div>
+    </section>
+
+    <!-- 2. SECTION DASHBOARD DE SYNTHÈSE -->
+    <section class="dashboard-section" aria-labelledby="dashboardTitle">
+      <div class="dashboard-section-header">
+        <h2 id="dashboardTitle">Dashboard de Suivi & Engagement</h2>
+        <p class="section-desc">Indicateurs de performance, respect du rythme et impact des publications.</p>
+      </div>
+
+      <div class="dashboard-grid">
+        <!-- KPI 1 : Taux de respect du rythme -->
+        <article class="kpi-card" aria-label="Respect du rythme">
+          <div class="kpi-header">
+            <div class="kpi-title-block">
+              <h3>Taux de respect du rythme</h3>
+              <p class="kpi-hint">Objectif : 4 créneaux tenus cette semaine</p>
+            </div>
+            <div class="kpi-badge-icon">🎯</div>
+          </div>
+          <div class="kpi-rhythm-display">
+            <div id="kpiRhythmValue" class="kpi-rhythm-num">0%</div>
+            <div class="rhythm-bar-track">
+              <div id="kpiRhythmBar" class="rhythm-bar-fill"></div>
+            </div>
+            <div id="kpiRhythmSub" class="kpi-rhythm-sub">Calcul en cours...</div>
+          </div>
+        </article>
+
+        <!-- KPI 2 : Vues moyennes stories vs engagement post lundi -->
+        <article class="kpi-card" aria-label="Stories vs Post du Lundi">
+          <div class="kpi-header">
+            <div class="kpi-title-block">
+              <h3>Stories vs Post du Lundi</h3>
+              <p class="kpi-hint">Vues moyennes des stories vs engagement du post</p>
+            </div>
+            <div class="kpi-badge-icon">⚖️</div>
+          </div>
+          <div id="kpiComparisonContainer">
+            <!-- Rendu dynamique par dashboard.js -->
+          </div>
+        </article>
+
+        <!-- KPI 3 : Meilleur jour de story sur les 4 dernières semaines -->
+        <article class="kpi-card" aria-label="Meilleur jour de story">
+          <div class="kpi-header">
+            <div class="kpi-title-block">
+              <h3>Meilleur jour de Story</h3>
+              <p class="kpi-hint">Moyenne des vues stories sur les 4 dernières semaines</p>
+            </div>
+            <div class="kpi-badge-icon">📊</div>
+          </div>
+          <div id="kpiBestDayContainer">
+            <!-- Rendu dynamique par dashboard.js -->
+          </div>
+        </article>
+
+        <!-- KPI 4 : Classement par type de contenu -->
+        <article class="kpi-card" aria-label="Classement des contenus">
+          <div class="kpi-header">
+            <div class="kpi-title-block">
+              <h3>Performance par Type de Contenu</h3>
+              <p class="kpi-hint">Score moyen (Vues, Likes, Commentaires, Partages)</p>
+            </div>
+            <div class="kpi-badge-icon">🏅</div>
+          </div>
+          <div id="kpiContentRankingContainer">
+            <!-- Rendu dynamique par dashboard.js -->
+          </div>
+        </article>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODALE D'ÉDITION / CRÉATION D'UN CRÉNEAU -->
+  <div id="editModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <h3 id="modalTitle">Modifier le créneau</h3>
+          <span id="modalSlotBadge" class="slot-tag">--</span>
+        </div>
+        <button class="btn-close-modal" data-close-modal title="Fermer">✕</button>
+      </div>
+
+      <form id="postForm">
+        <!-- Champs masqués -->
+        <input type="hidden" id="postSemaine">
+        <input type="hidden" id="postJourCible">
+        <input type="hidden" id="postType">
+
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="postStatut">Statut du créneau</label>
+              <select id="postStatut" required>
+                <option value="idee">💡 Idée (Brouillon)</option>
+                <option value="planifie">📅 Planifié (Prêt)</option>
+                <option value="publie">✅ Publié sur Instagram</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="postTypeContenu">Type de contenu</label>
+              <select id="postTypeContenu" required>
+                <option value="produit">🍽️ Produit / Plat Vedette</option>
+                <option value="coulisses">👨‍🍳 Coulisses / Équipe</option>
+                <option value="promo">🏷️ Promo / Brunch / Offre</option>
+                <option value="evenement">🎉 Événement / Soirée</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="postTitre">Titre ou Thématique</label>
+            <input type="text" id="postTitre" placeholder="Ex: Entrecôte grillée, Ambiance terrasse..." required>
+          </div>
+
+          <div class="form-group">
+            <label for="postLegende">Légende Instagram / Notes internes</label>
+            <textarea id="postLegende" rows="3" placeholder="Texte de la publication ou instructions pour le service..."></textarea>
+          </div>
+
+          <!-- Upload Visuel (Supabase Storage ou Local) -->
+          <div class="form-group">
+            <label>Visuel Instagram (Photo ou Vidéo)</label>
+            <input type="file" id="postFileInput" accept="image/*" style="display:none">
+            
+            <div id="uploadDropZone" class="upload-dropzone">
+              <div id="uploadPlaceholder" class="upload-placeholder-content">
+                <span class="upload-icon">📁</span>
+                <span id="uploadHintText" class="upload-hint-title">Cliquez ou glissez une image ici</span>
+                <span class="upload-hint-sub">JPG, PNG, WebP — Stocké sur Supabase Storage</span>
+              </div>
+              <div id="imagePreviewWrapper" class="image-preview-wrapper" style="display:none">
+                <img id="previewImg" alt="Prévisualisation">
+                <button type="button" id="btnRemoveImage" class="btn-remove-image">Supprimer</button>
+              </div>
+            </div>
+            
+            <input type="url" id="postVisuelUrl" placeholder="Ou collez directement une URL d'image (ex: https://...)" style="margin-top:8px">
+          </div>
+
+          <!-- Métriques d'engagement (activées dès que statut = publié) -->
+          <fieldset id="metricsSection" class="metrics-fieldset disabled">
+            <legend style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; text-transform:uppercase; color:var(--ink-soft); padding:0 4px;">
+              📊 Relevé des Métriques Réelles (Statut Publié)
+            </legend>
+            <div class="metrics-grid-inputs">
+              <div class="form-group">
+                <label for="postVues">👁️ Vues</label>
+                <input type="number" id="postVues" min="0" value="0">
+              </div>
+              <div class="form-group">
+                <label for="postLikes">❤️ Likes</label>
+                <input type="number" id="postLikes" min="0" value="0">
+              </div>
+              <div class="form-group">
+                <label for="postCommentaires">💬 Comms</label>
+                <input type="number" id="postCommentaires" min="0" value="0">
+              </div>
+              <div class="form-group">
+                <label for="postPartages">↗️ Partages</label>
+                <input type="number" id="postPartages" min="0" value="0">
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-modal secondary" data-close-modal>Annuler</button>
+          <button type="submit" class="btn-modal primary">Enregistrer le créneau</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODALE DE CONFIGURATION SUPABASE -->
+  <div id="configModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="configModalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="configModalTitle">Configuration Backend Supabase</h3>
+        <button class="btn-close-modal" data-close-modal title="Fermer">✕</button>
+      </div>
+      <form id="configForm">
+        <div class="modal-body">
+          <p style="font-size:13.5px; color:var(--ink-soft); line-height:1.5;">
+            Connectez ce module à votre projet Supabase (PostgreSQL & Storage). Si ces champs sont vides, l'application fonctionne de manière autonome en <strong>Mode Démo Local</strong> avec persistance dans votre navigateur.
+          </p>
+
+          <div class="form-group">
+            <label for="cfgSupabaseUrl">Supabase Project URL</label>
+            <input type="url" id="cfgSupabaseUrl" placeholder="https://votre-projet.supabase.co">
+          </div>
+
+          <div class="form-group">
+            <label for="cfgSupabaseKey">Supabase Anon Public Key</label>
+            <input type="text" id="cfgSupabaseKey" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+          </div>
+
+          <div style="background:var(--paper-soft); border:1px solid var(--line-soft); border-radius:var(--radius-sm); padding:12px; font-size:12px; color:var(--ink-soft); line-height:1.5;">
+            💡 <strong>Rappel Schéma SQL :</strong> Assurez-vous d'avoir exécuté le script <code style="background:var(--paper); padding:2px 4px; border-radius:3px;">supabase/schema.sql</code> dans l'éditeur SQL de votre tableau de bord Supabase pour créer la table et le bucket Storage.
+          </div>
+        </div>
+
+        <div class="modal-footer" style="justify-content:space-between;">
+          <button type="button" id="btnResetDemo" class="btn-modal secondary" style="color:var(--ochre);">
+            🔄 Réinitialiser données démo
+          </button>
+          <div style="display:flex; gap:10px;">
+            <button type="button" class="btn-modal secondary" data-close-modal>Fermer</button>
+            <button type="submit" class="btn-modal primary">Enregistrer la connexion</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION FLOTTANTE -->
+  <div id="toast" class="toast-notice" role="status" aria-live="polite"></div>
+
+  <!-- SCRIPTS APPLICATIFS -->
+  <script src="js/config.js"></script>
+  <script src="js/date-utils.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/calendar.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
