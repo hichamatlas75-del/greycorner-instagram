@@ -2572,23 +2572,18 @@ button:active,
   background: #fff;
 }
 
-.auth-form-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
 .btn-auth-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  width: 100%;
   background: var(--teal);
   color: #fff;
   border: 1px solid var(--teal-deep);
   border-radius: var(--radius-sm);
   padding: 12px 16px;
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -2606,34 +2601,6 @@ button:active,
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
-}
-
-.btn-auth-secondary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: var(--paper-soft);
-  color: var(--ink);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  padding: 12px 16px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-family: 'Inter', sans-serif;
-  min-height: 44px;
-}
-
-.btn-auth-secondary:hover {
-  background: var(--paper);
-  border-color: var(--teal);
-}
-
-.btn-auth-secondary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
 }
 
 /* Feedback messages */
@@ -2701,10 +2668,6 @@ body.auth-unlocked #userProfileBadge {
   .auth-card {
     padding: 22px 18px;
     gap: 16px;
-  }
-
-  .auth-form-actions {
-    grid-template-columns: 1fr;
   }
 
   .user-email-display {

@@ -149,50 +149,6 @@ const App = {
       }
     });
 
-    // Inscription / Création de compte
-    document.getElementById('btnSubmitSignUp')?.addEventListener('click', async () => {
-      const email = document.getElementById('authEmail')?.value.trim();
-      const password = document.getElementById('authPassword')?.value;
-      const btnSignUp = document.getElementById('btnSubmitSignUp');
-
-      if (!email || !password) {
-        this.showAuthFeedback(feedback, 'error', 'Veuillez renseigner un email et un mot de passe pour créer un compte.');
-        return;
-      }
-
-      if (password.length < 6) {
-        this.showAuthFeedback(feedback, 'error', 'Le mot de passe doit comporter au moins 6 caractères.');
-        return;
-      }
-
-      try {
-        if (btnSignUp) {
-          btnSignUp.disabled = true;
-          btnSignUp.innerHTML = '<span>⏳</span> Création...';
-        }
-        this.showAuthFeedback(feedback, 'info', 'Création du compte en cours...');
-
-        const user = await DataService.signUpWithEmailPassword(email, password);
-        if (DataService.isDemo) {
-          this.showAuthFeedback(feedback, 'success', '✨ [Mode Démo] Compte créé et session activée !');
-          setTimeout(async () => {
-            await this.setAuthenticatedState(user);
-            this.showToast(`Bienvenue, ${user.email} !`);
-          }, 400);
-        } else {
-          this.showAuthFeedback(feedback, 'success', `✉️ <strong>Compte créé avec succès !</strong><br>Si la confirmation d'email est requise sur votre projet Supabase, vérifiez la boîte <u>${CalendarModule.escapeHtml(email)}</u> pour valider votre compte.`);
-        }
-      } catch (err) {
-        console.error('[Auth] Erreur inscription:', err);
-        this.showAuthFeedback(feedback, 'error', `⚠️ Erreur d'inscription : ${err.message}`);
-      } finally {
-        if (btnSignUp) {
-          btnSignUp.disabled = false;
-          btnSignUp.innerHTML = '<span>✨</span> Créer un compte';
-        }
-      }
-    });
-
     // Déconnexion
     document.getElementById('btnLogout')?.addEventListener('click', async () => {
       if (confirm('Voulez-vous vous déconnecter et reverrouiller le contenu ?')) {
